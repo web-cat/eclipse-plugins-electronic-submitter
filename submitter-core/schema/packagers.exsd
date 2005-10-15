@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="net.sf.webcat.eclipse.submitter">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="net.sf.webcat.eclipse.submitter" id="packagers" name="Submission Packagers"/>
+      </appInfo>
+      <documentation>
+         This extension point is used to define additional packagers for the submission engine.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <choice minOccurs="0" maxOccurs="unbounded">
+            <element ref="packager"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  a fully qualified identifier of the target extension point
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  an optional identifier of the extension instance
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  an optional name of the extension instance
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="packager">
+      <annotation>
+         <appInfo>
+            <meta.element labelAttribute="name" icon="icon"/>
+         </appInfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the unique name that will be used to identify this packager
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  a translatable name that will be used in the UI for this packager
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  a fully qualified name of the class that implements 
+&lt;samp&gt;edu.vt.cs.submitter.core.IPackager&lt;/samp&gt;.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="net.sf.webcat.eclipse.submitter.core.IPackager"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  a relative name of the icon that will 
+be associated with the packager.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="resource"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         The following is an example of the extension point: 
+&lt;p&gt;
+&lt;pre&gt;
+   &lt;extension point=&quot;edu.vt.cs.submitter.packagers&quot;&gt; 
+      &lt;packager 
+         id=&quot;edu.vt.cs.submitter.packagers.jar&quot; 
+         name=&quot;Java JAR File Packager&quot; 
+         class=&quot;edu.vt.cs.submitter.internal.core.JarPackager&quot;/&gt; 
+   &lt;/extension&gt; 
+&lt;/pre&gt;
+&lt;/p&gt;
+
+To refer to a packager in the submission definition file, one uses the &lt;samp&gt;packager&lt;/samp&gt; tag, specifying the unique ID of the packager through the &lt;samp&gt;id&lt;/samp&gt; attribute:
+
+&lt;p&gt;
+&lt;pre&gt;
+   &lt;assignment name=&quot;Assignment #1&quot;&gt;
+      &lt;packager id=&quot;edu.vt.cs.submitter.packagers.jar&quot;/&gt;
+      ...
+   &lt;/assignment&gt;
+&lt;/pre&gt;
+&lt;/p&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         The value of the &lt;samp&gt;class&lt;/samp&gt; attribute must be a 
+fully qualified name of the class that implements 
+&lt;samp&gt;net.sf.webcat.eclipse.submitter.core.IPackager&lt;/samp&gt;.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         The submitter plug-in provides two packagers: &lt;samp&gt;net.sf.webcat.eclipse.submitter.packagers.zip&lt;/samp&gt; and &lt;samp&gt;net.sf.webcat.eclipse.submitter.packagers.jar&lt;/samp&gt;.
+
+If no packager is specified in the submission definition file, &lt;samp&gt;net.sf.webcat.eclipse.submitter.packagers.zip&lt;/samp&gt; is used by default.  The packager used for a particular assignment or assignment group can be overridden by using the &lt;samp&gt;packager&lt;/samp&gt; tag.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>

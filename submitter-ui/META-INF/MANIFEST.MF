@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Web-CAT Electronic Submission Wizard
+Bundle-SymbolicName: net.sf.webcat.eclipse.submitter.ui; singleton:=true
+Bundle-Version: 1.1.0
+Bundle-ClassPath: submitterui.jar
+Bundle-Activator: net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin
+Bundle-Vendor: Virginia Tech Computer Science
+Bundle-Localization: plugin
+Export-Package: net.sf.webcat.eclipse.submitter.ui,
+ net.sf.webcat.eclipse.submitter.ui.actions,
+ net.sf.webcat.eclipse.submitter.ui.dialogs,
+ net.sf.webcat.eclipse.submitter.ui.editors,
+ net.sf.webcat.eclipse.submitter.ui.popup.actions,
+ net.sf.webcat.eclipse.submitter.ui.wizards,
+ net.sf.webcat.eclipse.submitter.ui.wizards.images
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ net.sf.webcat.eclipse.submitter
+Eclipse-AutoStart: true
