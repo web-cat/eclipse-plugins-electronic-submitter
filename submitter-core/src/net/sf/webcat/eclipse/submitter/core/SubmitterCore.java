@@ -17,6 +17,9 @@
  */
 package net.sf.webcat.eclipse.submitter.core;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -24,6 +27,10 @@ import net.sf.webcat.eclipse.submitter.internal.core.PackagerRegistry;
 import net.sf.webcat.eclipse.submitter.internal.core.ProtocolRegistry;
 import net.sf.webcat.eclipse.submitter.internal.core.SubmissionEngine;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -70,6 +77,9 @@ public class SubmitterCore extends AbstractUIPlugin
 	public static final String IDENTIFICATION_EMAILADDRESS = PLUGIN_ID
 			+ ".identification.emailAddress";
 
+	public static final String ID_EXTENSION_POINT_SUBMISSION_LISTENERS
+		= PLUGIN_ID + ".submissionListeners";
+
 	/**
 	 * The plug-in's resource bundle.
 	 */
@@ -86,6 +96,8 @@ public class SubmitterCore extends AbstractUIPlugin
 	 * extensions loaded by Eclipse.
 	 */
 	private PackagerRegistry packagerRegistry;
+
+	private List submissionListeners;
 
 	/**
 	 * The constructor.
@@ -205,5 +217,72 @@ public class SubmitterCore extends AbstractUIPlugin
 			packagerRegistry = new PackagerRegistry();
 
 		return packagerRegistry;
+	}
+
+	/**
+	 * Initializes submission listener extensions
+	 */
+	private void loadSubmissionListeners()
+	{
+		submissionListeners = new ArrayList();
+		IExtensionPoint extensionPoint =
+			Platform.getExtensionRegistry().getExtensionPoint(
+					ID_EXTENSION_POINT_SUBMISSION_LISTENERS);
+
+		if (extensionPoint == null)
+			return;
+
+		IConfigurationElement[] configs = extensionPoint.getConfigurationElements();
+
+		for(int i = 0; i < configs.length; i++)
+		{
+			try
+			{
+				ISubmissionListener submissionListener = (ISubmissionListener)
+					configs[i].createExecutableExtension("class");
+				submissionListeners.add(submissionListener);
+			}
+			catch (CoreException e)
+			{
+			}
+		}
+	}
+	
+	public ISubmissionListener[] getSubmissionListeners()
+	{
+		if(submissionListeners == null)
+			loadSubmissionListeners();
+
+		return (ISubmissionListener[])submissionListeners.toArray(
+				new ISubmissionListener[submissionListeners.size()]);
+	}
+
+	/**
+	 * Adds a submission listener to the collection of listeners
+	 * @param newListener the listener to add
+	 */
+	public void addSubmissionListener(ISubmissionListener newListener)
+	{
+		if (submissionListeners == null) 
+			loadSubmissionListeners();
+		
+		for(Iterator iter = submissionListeners.iterator(); iter.hasNext(); )
+		{
+			Object o = iter.next();
+			if(o == newListener)
+				return;
+		}
+
+		submissionListeners.add(newListener);
+	}
+
+	/**
+	 * Removes a submission listener to the collection of listeners
+	 * @param newListener the listener to remove
+	 */
+	public void removeSubmissionListener(ISubmissionListener newListener)
+	{
+		if(submissionListeners != null) 
+			submissionListeners.remove(newListener);
 	}
 }

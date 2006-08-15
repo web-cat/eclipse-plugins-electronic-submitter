@@ -4,6 +4,7 @@
 
      <extension-point id="protocols" name="Transport Protocols" schema="schema/protocols.exsd"/>
    <extension-point id="packagers" name="Submission Packagers" schema="schema/packagers.exsd"/>
+   <extension-point id="submissionListeners" name="Submission Listeners" schema="schema/submissionListeners.exsd"/>
    
    <extension
          point="org.eclipse.ui.preferencePages">

@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Web-CAT Electronic Submission Core Plug-in
+Bundle-Name: Web-CAT Electronic Submission Core
 Bundle-SymbolicName: net.sf.webcat.eclipse.submitter; singleton:=true
-Bundle-Version: 1.1.2
+Bundle-Version: 1.1.3
 Bundle-ClassPath: submitcore.jar,
  lib/activation.jar,
  lib/mail.jar,

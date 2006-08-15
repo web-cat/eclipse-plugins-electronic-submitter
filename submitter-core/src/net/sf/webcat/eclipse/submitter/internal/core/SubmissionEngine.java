@@ -17,9 +17,9 @@
  */
 package net.sf.webcat.eclipse.submitter.internal.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -35,6 +35,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.webcat.eclipse.submitter.core.IProtocol;
 import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
+import net.sf.webcat.eclipse.submitter.core.ISubmissionListener;
 import net.sf.webcat.eclipse.submitter.core.ITarget;
 import net.sf.webcat.eclipse.submitter.core.ITargetRoot;
 import net.sf.webcat.eclipse.submitter.core.RequiredFilesMissingException;
@@ -104,7 +105,6 @@ public class SubmissionEngine implements ISubmissionEngine
 					stream = url.openStream();
 					openFromStream(stream, monitor);
 				}
-
 				catch(Exception e)
 				{
 					throw new InvocationTargetException(e);
@@ -270,6 +270,8 @@ public class SubmissionEngine implements ISubmissionEngine
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException
 			{
+				notifyListenersOfStart(params);
+
 				try
 				{
 					monitor.beginTask("Please wait... ",
@@ -326,8 +328,12 @@ public class SubmissionEngine implements ISubmissionEngine
 				}
 				catch(Throwable e)
 				{
+					notifyListenersOfFailure(params, e);
+
 					throw new InvocationTargetException(e);
 				}
+				
+				notifyListenersOfSuccess(params, submissionResponse);
 			}
 		};
 
@@ -338,6 +344,7 @@ public class SubmissionEngine implements ISubmissionEngine
 		catch(InvocationTargetException e)
 		{
 			Throwable te = e.getTargetException();
+			
 			if(te instanceof MalformedURLException)
 				throw (MalformedURLException)te;
 			else if(te instanceof CoreException)
@@ -345,6 +352,37 @@ public class SubmissionEngine implements ISubmissionEngine
 			else if(te instanceof IOException)
 				throw (IOException)te;
 		}
+	}
+
+	private void notifyListenersOfStart(final SubmissionParameters params)
+	{
+		final ISubmissionListener[] listeners =
+			SubmitterCore.getDefault().getSubmissionListeners();
+
+		for(int i = 0; i < listeners.length; i++)
+			listeners[i].submissionStarted(params);
+	}
+
+	private void notifyListenersOfSuccess(
+			final SubmissionParameters params,
+			final String response)
+	{
+		final ISubmissionListener[] listeners =
+			SubmitterCore.getDefault().getSubmissionListeners();
+
+		for(int i = 0; i < listeners.length; i++)
+			listeners[i].submissionSucceeded(params, response);
+	}
+
+	private void notifyListenersOfFailure(
+			final SubmissionParameters params,
+			final Throwable exception)
+	{
+		final ISubmissionListener[] listeners =
+			SubmitterCore.getDefault().getSubmissionListeners();
+
+		for(int i = 0; i < listeners.length; i++)
+			listeners[i].submissionFailed(params, exception);
 	}
 
 	private String[] verifyRequiredFiles(IRunnableContext context,
