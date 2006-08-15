@@ -19,8 +19,8 @@ package net.sf.webcat.eclipse.submitter.ui.wizards;
 
 import net.sf.webcat.eclipse.submitter.core.INameableTarget;
 import net.sf.webcat.eclipse.submitter.core.ITarget;
+import net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -46,11 +46,8 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 	 */
 	public SubmissionTargetsLabelProvider()
 	{
-		folderImage = ImageDescriptor.createFromURL(
-				getClass().getResource("images/folder.gif")).createImage();
-
-		fileImage = ImageDescriptor.createFromURL(
-				getClass().getResource("images/file.gif")).createImage();
+		folderImage = SubmitterUIPlugin.getImageDescriptor("folder.gif").createImage();
+		fileImage = SubmitterUIPlugin.getImageDescriptor("file.gif").createImage();
 	}
 
 	/* (non-Javadoc)

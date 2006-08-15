@@ -18,11 +18,11 @@
 package net.sf.webcat.eclipse.submitter.ui.wizards;
 
 import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
+import net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 import net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor;
 import net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditorInput;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 
@@ -75,8 +75,8 @@ public class SubmitterWizard extends Wizard
 		this.project = project;
 		this.setWindowTitle("Electronic Submission");
 
-		this.setDefaultPageImageDescriptor(ImageDescriptor
-				.createFromURL(getClass().getResource("images/banner.png")));
+		this.setDefaultPageImageDescriptor(
+				SubmitterUIPlugin.getImageDescriptor("banner.png"));
 		this.setNeedsProgressMonitor(true);
 	}
 

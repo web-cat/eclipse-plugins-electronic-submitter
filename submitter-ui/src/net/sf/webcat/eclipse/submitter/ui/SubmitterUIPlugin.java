@@ -28,8 +28,10 @@ import net.sf.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
 import net.sf.webcat.eclipse.submitter.ui.wizards.SubmitterWizard;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -45,7 +47,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	/**
 	 * The unique identifier of the plug-in.
 	 */
-	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter";
+	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter.ui";
 
 	/**
 	 * The shared instance of the plug-in.
@@ -67,7 +69,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		try
 		{
 			resourceBundle = ResourceBundle
-					.getBundle("net.sf.webcat.eclipse.submitter.SubmitterUIPluginResources");
+					.getBundle("net.sf.webcat.eclipse.submitter.ui.SubmitterUIPluginResources");
 		}
 		catch(MissingResourceException x)
 		{
@@ -146,6 +148,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 
 			ProgressMonitorDialog dlg = new ProgressMonitorDialog(shell);
 
+			
 			engine.openDefinitions(url, dlg);
 		}
 		catch(MalformedURLException e)
@@ -175,7 +178,22 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 
 		// Instantiates the wizard container with the wizard and opens it
 		WizardDialog dialog = new WizardDialog(shell, wizard);
-		dialog.create();
 		dialog.open();
+	}
+	
+	public static ImageDescriptor getImageDescriptor(String path)
+	{
+		try
+		{
+			URL base = Platform.getBundle(PLUGIN_ID).getEntry("/icons/");
+			URL url = new URL(base, path);
+			
+			return ImageDescriptor.createFromURL(url);
+		}
+		catch (MalformedURLException e)
+		{
+		}
+
+		return null;
 	}
 }

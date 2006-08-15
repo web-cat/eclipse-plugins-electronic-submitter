@@ -136,12 +136,6 @@ public class SubmitterSummaryPage extends WizardPage
 
 	public void dispose()
 	{
-		if(infoImage != null)
-			infoImage.dispose();
-		if(warningImage != null)
-			warningImage.dispose();
-		if(errorImage != null)
-			errorImage.dispose();
 		if(boldFont != null)
 			boldFont.dispose();
 	}
