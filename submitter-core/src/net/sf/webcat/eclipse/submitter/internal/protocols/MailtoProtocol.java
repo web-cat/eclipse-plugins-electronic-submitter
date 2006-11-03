@@ -104,7 +104,7 @@ public class MailtoProtocol implements IProtocol
 			String authString = (String)asmt.getTransportParams(context).get("auth");
 			boolean auth = false;
 			if(authString != null)
-				auth = Boolean.getBoolean(authString);
+				auth = Boolean.parseBoolean(authString);
 	
 			Session session;
 			if(auth)
