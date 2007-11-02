@@ -22,7 +22,7 @@ package net.sf.webcat.eclipse.submitter.core;
  * root of the tree manages listeners that monitor change events for children
  * of the tree. 
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITargetRoot
 	extends ITarget, ITargetChangeProvider

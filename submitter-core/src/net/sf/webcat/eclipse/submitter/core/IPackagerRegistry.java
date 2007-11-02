@@ -23,10 +23,11 @@ package net.sf.webcat.eclipse.submitter.core;
  * 
  * This interface is not intended to be implemented by clients.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface IPackagerRegistry
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the specified packager, or null if there is no such packager
 	 * currently registered.
@@ -38,12 +39,14 @@ public interface IPackagerRegistry
 	 */
 	IPackager getPackager(String id);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns an array containing all of the currently loaded packager
 	 * extensions.
 	 * 
 	 * @return An array of Strings, each element of which is the unique
-	 *         identifier of a currently loaded packager extension. 
+	 *         identifier of a currently loaded packager extension.
 	 */
 	String[] getPackagerNames();
 }

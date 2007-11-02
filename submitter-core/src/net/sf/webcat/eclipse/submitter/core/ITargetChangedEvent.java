@@ -18,10 +18,20 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * This interface contains methods that provide information about a change in
+ * the submission target tree caused by calling a set*() method on one of its
+ * nodes.
+ * 
+ * This interface is meant to be used as part of a visual editor for submission
+ * target files.
+ * 
+ * This interface is not intended to be implemented by clients.
+ * 
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITargetChangedEvent
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the provider that fired this event.
 	 * 
@@ -29,6 +39,8 @@ public interface ITargetChangedEvent
 	 */
 	public ITargetChangeProvider getChangeProvider();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns an array of model objects that are affected by the change.
 	 * 
@@ -36,21 +48,27 @@ public interface ITargetChangedEvent
 	 */
 	public ITarget[] getChangedObjects();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns a name of the object's property that has been changed.
 	 * 
-	 * @return property that has been changed in the model object,
-	 *         or if more than one property has been changed.
+	 * @return property that has been changed in the model object, or if more
+	 *         than one property has been changed.
 	 */
 	public String getChangedProperty();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Used to obtain the old value of the property (before the change).
 	 * 
 	 * @return the old value of the changed property
 	 */
 	public Object getOldValue();
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Used to obtain the new value of the property (after the change).
 	 * 

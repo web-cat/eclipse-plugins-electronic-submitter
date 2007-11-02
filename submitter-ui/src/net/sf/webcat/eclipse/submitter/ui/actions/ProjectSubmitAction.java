@@ -18,6 +18,7 @@
 package net.sf.webcat.eclipse.submitter.ui.actions;
 
 import net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
+import net.sf.webcat.eclipse.submitter.ui.dialogs.AmbiguousProjectToSubmitDialog;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -33,32 +34,69 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 /**
- * The workbench action delegate that invokes the submission wizard.
+ * The workbench action delegate that invokes the submission wizard. This action
+ * is used by the Submit Project option in the Project menu, as well as the
+ * Submit button in the main toolbar. (The Submit option in a project's context
+ * menu is provided by the similar class in the .popup.actions package.)
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 {
-	private IWorkbenchWindow window;
-
-	private IProject currentProject;
-
+	// === Methods ============================================================
+	
+	// ------------------------------------------------------------------------
 	/**
 	 * Called when the workbench action is invoked.
 	 */
 	public void run(IAction action)
 	{
-		if(currentProject != null)
-			SubmitterUIPlugin.getDefault().spawnSubmissionUI(window.getShell(),
-					currentProject);
+		IProject projectToSubmit = null;
+
+		if(selectedProject == activeEditorProject)
+		{
+			projectToSubmit = selectedProject;
+		}
+		else if(selectedProject != null && activeEditorProject == null)
+		{
+			projectToSubmit = selectedProject;
+		}
+		else if(selectedProject == null && activeEditorProject != null)
+		{
+			projectToSubmit = activeEditorProject;
+		}
+		else
+		{
+			// The current workspace selection (Package Explorer,
+			// Navigator, etc.) is one project, but the active editor
+			// contains a file in another project. Ask the user to
+			// choose which of the two projects they want to submit.
+			AmbiguousProjectToSubmitDialog dialog = AmbiguousProjectToSubmitDialog
+			        .createWithProjects(window.getShell(), selectedProject,
+			                activeEditorProject);
+			int result = dialog.open();
+
+			if(result == 0)
+			{
+				projectToSubmit = dialog.getSelectedProject();
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		SubmitterUIPlugin.getDefault().spawnSubmissionUI(window.getShell(),
+		        projectToSubmit);
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Called when the selection in the workbench has changed.
 	 */
 	public void selectionChanged(IAction action, ISelection selection)
 	{
-		currentProject = null;
 		if(selection != null)
 		{
 			if(selection instanceof IStructuredSelection)
@@ -69,7 +107,8 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 				if(obj instanceof IAdaptable)
 				{
 					IAdaptable adapt = (IAdaptable)obj;
-					currentProject = (IProject)adapt.getAdapter(IProject.class);
+					selectedProject = (IProject)adapt
+					        .getAdapter(IProject.class);
 				}
 			}
 		}
@@ -78,24 +117,21 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 		if(activePage != null)
 		{
 			IEditorPart activeEditor = activePage.getActiveEditor();
-			
+
 			if(activeEditor != null)
 			{
 				IEditorInput editorInput = activeEditor.getEditorInput();
 				if(editorInput instanceof IFileEditorInput)
 				{
 					IFile file = ((IFileEditorInput)editorInput).getFile();
-					currentProject = file.getProject();
+					activeEditorProject = file.getProject();
 				}
 			}
 		}
-
-		if(currentProject == null)
-			action.setEnabled(false);
-		else
-			action.setEnabled(true);
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Called when the delegate is disposed.
 	 */
@@ -103,6 +139,8 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 	{
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Called when the delegate is initialized.
 	 */
@@ -110,4 +148,24 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 	{
 		this.window = window;
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The workbench window to which this action belongs.
+	 */
+	private IWorkbenchWindow window;
+
+	/**
+	 * The project that is currently selected in the workbench (in the
+	 * Navigator, Package Explorer, or similar view).
+	 */
+	private IProject selectedProject;
+
+	/**
+	 * The project to which the file in the currently active workbench editor
+	 * belongs.
+	 */
+	private IProject activeEditorProject;
 }

@@ -18,6 +18,7 @@
 package net.sf.webcat.eclipse.submitter.ui.wizards;
 
 import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
+import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.WizardPage;
@@ -36,44 +37,13 @@ import org.eclipse.swt.widgets.Text;
  * The summary page shows the status of the submission, as well as any errors
  * that may have occurred.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmitterSummaryPage extends WizardPage
 {
-	/**
-	 * The submission succeeded.
-	 */
-	public static final int RESULT_OK = 0;
-
-	/**
-	 * The submission was canceled by the user.
-	 */
-	public static final int RESULT_CANCELED = 1;
-
-	/**
-	 * The submission was incomplete (i.e., not all required files were found).
-	 */
-	public static final int RESULT_INCOMPLETE = 2;
-
-	/**
-	 * There was some other error during submission.
-	 */
-	public static final int RESULT_ERROR = 3;
-
-	private Label imageLabel;
-
-	private Label summaryLabel;
-
-	private Text descriptionField;
-
-	private Image infoImage;
-
-	private Image warningImage;
-
-	private Image errorImage;
-
-	private Font boldFont;
-
+	// === Methods ============================================================
+	
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the wizard summary page.
 	 * 
@@ -84,12 +54,14 @@ public class SubmitterSummaryPage extends WizardPage
 	 */
 	protected SubmitterSummaryPage(ISubmissionEngine engine, IProject project)
 	{
-		super("Submission Result Page");
+		super(Messages.SUMMARYPAGE_PAGE_NAME);
 
-		setTitle("Electronic Submission");
-		setDescription("The status of your submission is displayed below.");
+		setTitle(Messages.SUMMARYPAGE_PAGE_TITLE);
+		setDescription(Messages.SUMMARYPAGE_PAGE_DESCRIPTION);
 	}
 
+
+	// ------------------------------------------------------------------------
 	public void createControl(Composite parent)
 	{
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -122,29 +94,35 @@ public class SubmitterSummaryPage extends WizardPage
 
 		summaryLabel = new Label(subComposite, SWT.NONE);
 		summaryLabel.setFont(boldFont);
-		summaryLabel.setText("");
+		summaryLabel.setText(""); //$NON-NLS-1$
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		summaryLabel.setLayoutData(gd);
 
 		descriptionField = new Text(subComposite, SWT.READ_ONLY | SWT.MULTI
-				| SWT.WRAP);
+		        | SWT.WRAP);
 		gd = new GridData(GridData.FILL_BOTH);
 		descriptionField.setLayoutData(gd);
 
 		setControl(composite);
 	}
 
+
+	// ------------------------------------------------------------------------
 	public void dispose()
 	{
 		if(boldFont != null)
 			boldFont.dispose();
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean canFlipToNextPage()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the result code/error status that will be displayed in the summary.
 	 * 
@@ -160,28 +138,91 @@ public class SubmitterSummaryPage extends WizardPage
 		{
 		case RESULT_OK:
 			imageLabel.setImage(infoImage);
-			summaryLabel.setText("Your submission was successful.");
+			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_SUCCESS);
 			descriptionField.setText(description);
 			break;
 
 		case RESULT_INCOMPLETE:
 			imageLabel.setImage(warningImage);
-			summaryLabel.setText("Your submission was incomplete.");
+			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_INCOMPLETE);
 			descriptionField.setText(description);
 			break;
 
 		case RESULT_CANCELED:
 			imageLabel.setImage(warningImage);
-			summaryLabel.setText("Your submission was canceled.");
+			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_CANCELED);
 			descriptionField.setText(description);
 			break;
 
 		case RESULT_ERROR:
 			imageLabel.setImage(errorImage);
-			summaryLabel
-					.setText("Your submission failed.  The following error occurred:");
+			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_FAILED);
 			descriptionField.setText(description);
 			break;
 		}
 	}
+
+
+	// === Static Variables ===================================================
+
+	/**
+	 * The submission succeeded.
+	 */
+	public static final int RESULT_OK = 0;
+
+	/**
+	 * The submission was canceled by the user.
+	 */
+	public static final int RESULT_CANCELED = 1;
+
+	/**
+	 * The submission was incomplete (i.e., not all required files were found).
+	 */
+	public static final int RESULT_INCOMPLETE = 2;
+
+	/**
+	 * There was some other error during submission.
+	 */
+	public static final int RESULT_ERROR = 3;
+
+	
+	// === Instance Variables =================================================
+
+	/**
+	 * The label control used to display the error/info status of the
+	 * submission.
+	 */
+	private Label imageLabel;
+
+	/**
+	 * The label that displays a summary of the status of the submission.
+	 */
+	private Label summaryLabel;
+
+	/**
+	 * A text field that displays a detailed description of the result of the
+	 * submission.
+	 */
+	private Text descriptionField;
+
+	/**
+	 * The image that represents an informational bubble.
+	 */
+	private Image infoImage;
+
+	/**
+	 * The image that represents a warning sign.
+	 */
+	private Image warningImage;
+
+	/**
+	 * The image that represents an error.
+	 */
+	private Image errorImage;
+
+	/**
+	 * A bold variant of the standard user interface font that is used to
+	 * display the submission summary message.
+	 */
+	private Font boldFont;
 }

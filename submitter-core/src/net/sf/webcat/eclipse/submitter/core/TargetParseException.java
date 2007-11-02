@@ -21,21 +21,12 @@ package net.sf.webcat.eclipse.submitter.core;
  * This exception class collects all the errors that occur during the parsing of
  * the submission definitions file. Once parsing is complete, the user of the
  * submission engine can access the list of errors, if any, from the exception.
- *
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * 
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class TargetParseException extends SubmissionTargetException
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The list of errors that occurred during parsing.
-	 */
-	private TargetParseError[] errors;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new exception object with the specified errors.
 	 * 
@@ -48,6 +39,8 @@ public class TargetParseException extends SubmissionTargetException
 		this.errors = errors;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the list of errors that occurred during parsing.
 	 * 
@@ -58,4 +51,17 @@ public class TargetParseException extends SubmissionTargetException
 	{
 		return errors;
 	}
+
+
+	// === Static Variables ===================================================
+
+	private static final long serialVersionUID = 1L;
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The list of errors that occurred during parsing.
+	 */
+	private TargetParseError[] errors;
 }

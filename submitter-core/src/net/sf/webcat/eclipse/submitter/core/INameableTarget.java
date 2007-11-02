@@ -18,27 +18,31 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * An interface implemented by definition objects that can be given a name.
- * Users can query for this interface by using the getAdapter() method provided
- * by objects that implement the IDefinitionObject interface.
+ * An interface implemented by submission arget objects that can be given a
+ * name. Users can query for this interface by using the getAdapter() method
+ * provided by objects that implement the ITarget interface.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface INameableTarget
 {
+	// ------------------------------------------------------------------------
 	/**
-	 * Gets the name assigned to the definition object.
+	 * Gets the name assigned to the submission target.
 	 * 
-	 * @return A String containing the name of the object, or null if no name is
+	 * @return A String containing the name of the target, or null if no name is
 	 *         given.
 	 */
 	String getName();
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Sets the name assignmed to the definition object.
+	 * Sets the name assignmed to the submission target.
 	 * 
-	 * @param value A String containing the name of the object, or null if no
-	 *              name should be assigned.
+	 * @param value
+	 *            A String containing the name of the target, or null if no name
+	 *            should be assigned.
 	 */
 	void setName(String value);
 }

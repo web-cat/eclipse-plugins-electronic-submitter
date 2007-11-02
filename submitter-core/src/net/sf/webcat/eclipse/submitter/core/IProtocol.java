@@ -29,13 +29,18 @@ import org.eclipse.jface.operation.IRunnableContext;
  * a project. Submission protocols should implement this interface and put their
  * custom submission functionality in the submit method.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface IProtocol
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Submits the project.
 	 * 
+	 * @param context
+	 * 			  An object that implements the IRunnableContext interface to
+	 * 			  be used to manage long-running stages of the submission
+	 * 			  process.
 	 * @param monitor
 	 *            An IProgressMonitor that is used to display the progress of
 	 *            the submission process.
@@ -53,11 +58,12 @@ public interface IProtocol
 	 * @throws InterruptedException
 	 *             if the submission process was interrupted by the user.
 	 */
-	void submit(IRunnableContext context,
-			IProgressMonitor monitor, SubmissionParameters params,
-			URI transport) throws CoreException, IOException,
-			InterruptedException;
+	void submit(IRunnableContext context, IProgressMonitor monitor,
+	        SubmissionParameters params, URI transport) throws CoreException,
+	        IOException, InterruptedException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns a value indicating whether the protocol sends back a response
 	 * from the submission.
@@ -66,6 +72,8 @@ public interface IProtocol
 	 */
 	boolean hasResponse();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the response to the submission.
 	 * 

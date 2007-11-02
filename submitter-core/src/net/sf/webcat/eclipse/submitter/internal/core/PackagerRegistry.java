@@ -30,24 +30,21 @@ import org.eclipse.core.runtime.Platform;
 /**
  * Maintains the list of all available packager extensions loaded into Eclipse.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class PackagerRegistry implements IPackagerRegistry
 {
-	/**
-	 * The packager extension point id.
-	 */
-	private static final String packagersId =
-		SubmitterCore.PLUGIN_ID + ".packagers";
+	// === Methods ============================================================
 
+	// ------------------------------------------------------------------------
 	public IPackager getPackager(String id)
 	{
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = registry
-				.getExtensionPoint(packagersId);
+		        .getExtensionPoint(packagersId);
 
-		IConfigurationElement[] elements =
-			extensionPoint.getConfigurationElements();
+		IConfigurationElement[] elements = extensionPoint
+		        .getConfigurationElements();
 
 		for(int i = 0; i < elements.length; i++)
 		{
@@ -58,7 +55,7 @@ public class PackagerRegistry implements IPackagerRegistry
 				try
 				{
 					Object packager = element
-							.createExecutableExtension("class");
+					        .createExecutableExtension("class");
 
 					if(packager instanceof IPackager)
 						return (IPackager)packager;
@@ -74,17 +71,19 @@ public class PackagerRegistry implements IPackagerRegistry
 		return null;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public String[] getPackagerNames()
 	{
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = registry
-				.getExtensionPoint(packagersId);
+		        .getExtensionPoint(packagersId);
 
-		IConfigurationElement[] elements =
-			extensionPoint.getConfigurationElements();
+		IConfigurationElement[] elements = extensionPoint
+		        .getConfigurationElements();
 
 		String[] names = new String[elements.length];
-		
+
 		for(int i = 0; i < elements.length; i++)
 		{
 			IConfigurationElement element = elements[i];
@@ -93,4 +92,13 @@ public class PackagerRegistry implements IPackagerRegistry
 
 		return names;
 	}
+
+
+	// === Static Variables ===================================================
+	
+	/**
+	 * The packager extension point id.
+	 */
+	private static final String packagersId = SubmitterCore.PLUGIN_ID
+	        + ".packagers";
 }

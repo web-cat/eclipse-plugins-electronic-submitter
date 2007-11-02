@@ -44,45 +44,43 @@ import org.eclipse.jface.operation.IRunnableContext;
 /**
  * A submission packager that writes the project files to a Java JAR archive.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class JarPackager implements IPackager
 {
-	private ITarget asmt;
+	// === Methods ============================================================
 
-	private IProject project;
-
-	private JarOutputStream zip;
-
-	public void pack(IRunnableContext context,
-			SubmissionParameters params,
-			OutputStream stream) throws CoreException, IOException
+	// ------------------------------------------------------------------------
+	public void pack(IRunnableContext context, SubmissionParameters params,
+	        OutputStream stream) throws CoreException, IOException
 	{
 		try
 		{
 			this.asmt = params.getAssignment();
 			this.project = params.getProject();
-	
+
 			Manifest manifest = new Manifest();
 			Attributes attrs = manifest.getMainAttributes();
-	
+
 			attrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-	
-			Set packagerParams = asmt.getPackagerParams(context).entrySet();
-			for(Iterator it = packagerParams.iterator(); it.hasNext(); )
+
+			Set<Map.Entry<String, String>> packagerParams = asmt
+			        .getPackagerParams(context).entrySet();
+			for(Iterator<Map.Entry<String, String>> it = packagerParams
+			        .iterator(); it.hasNext();)
 			{
-				Map.Entry entry = (Map.Entry)it.next();
-				String name = (String)entry.getKey();
-				String value = (String)entry.getValue();
-	
+				Map.Entry<String, String> entry = it.next();
+				String name = entry.getKey();
+				String value = entry.getValue();
+
 				attrs.putValue(name, params.resolveParameter(value));
 			}
-	
+
 			zip = new JarOutputStream(stream, manifest);
-	
+
 			IResource[] members = project.members();
-			recurseProjectContents(context, "", members);
-	
+			recurseProjectContents(context, members);
+
 			zip.finish();
 		}
 		catch(SubmissionTargetException e)
@@ -90,37 +88,33 @@ public class JarPackager implements IPackager
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	private void recurseProjectContents(IRunnableContext context,
-			String folder, IResource[] members)
-			throws CoreException, IOException, SubmissionTargetException
+	        IResource[] members) throws CoreException,
+	        IOException, SubmissionTargetException
 	{
 		for(int i = 0; i < members.length; i++)
 		{
 			IResource current = members[i];
+
 			if(current.getType() == IResource.FOLDER)
 			{
-				String folderName = current.getName();
-				if(folder != "")
-					folderName = folder + "/" + folderName;
-
-				recurseProjectContents(context, folderName, ((IFolder)current).members());
+				recurseProjectContents(context, ((IFolder)current).members());
 			}
 			else if(current.getType() == IResource.FILE)
 			{
 				IFile file = (IFile)current;
-				String fileName;
-				if(folder == "")
-					fileName = file.getName();
-				else
-					fileName = folder + "/" + file.getName();
+				String projectRelativePath =
+				        current.getProjectRelativePath().toString();
 
 				// Find out whether this file is included or
 				// excluded.
-				boolean excluded = asmt.isFileExcluded(file.getFullPath()
-						.toFile(), context);
+				boolean excluded = asmt.isFileExcluded(projectRelativePath,
+						context);
 				if(!excluded)
 				{
-					JarEntry entry = new JarEntry(fileName);
+					JarEntry entry = new JarEntry(projectRelativePath);
 					zip.putNextEntry(entry);
 
 					File inFileSpec = file.getLocation().toFile();
@@ -135,4 +129,23 @@ public class JarPackager implements IPackager
 			}
 		}
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The submission target to which the project is being submitted.
+	 */
+	private ITarget asmt;
+
+	/**
+	 * The project resource that is being submitted.
+	 */
+	private IProject project;
+
+	/**
+	 * The output stream to which the contents of the JAR file should be
+	 * written.
+	 */
+	private JarOutputStream zip;
 }

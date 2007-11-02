@@ -35,31 +35,33 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableContext;
 
 /**
- * A protocol for the "file" URI scheme that supports writing the submitted
- * file to a location on the local file system.
+ * A protocol for the "file" URI scheme that supports writing the submitted file
+ * to a location on the local file system.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class FileProtocol implements IProtocol
 {
-	public void submit(IRunnableContext context,
-			IProgressMonitor monitor, SubmissionParameters params,
-			URI transport) throws CoreException, IOException,
-			InterruptedException
+	// ------------------------------------------------------------------------
+	public void submit(IRunnableContext context, IProgressMonitor monitor,
+	        SubmissionParameters params, URI transport) throws CoreException,
+	        IOException, InterruptedException
 	{
 		try
 		{
 			URL url = transport.toURL();
-			
+
 			String path = url.getFile();
 			path = URLDecoder.decode(path, "utf-8");
-	
+
 			FileOutputStream outStream = new FileOutputStream(path);
-	
-			IPackagerRegistry manager = SubmitterCore.getDefault().getPackagerRegistry();
-			IPackager packager = manager.getPackager(params.getAssignment().getPackager(context));
+
+			IPackagerRegistry manager = SubmitterCore.getDefault()
+			        .getPackagerRegistry();
+			IPackager packager = manager.getPackager(params.getAssignment()
+			        .getPackager(context));
 			packager.pack(context, params, outStream);
-	
+
 			outStream.close();
 		}
 		catch(SubmissionTargetException e)
@@ -67,11 +69,15 @@ public class FileProtocol implements IProtocol
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean hasResponse()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public String getResponse()
 	{
 		return null;

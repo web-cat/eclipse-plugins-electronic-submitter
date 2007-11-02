@@ -18,34 +18,30 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * Thrown by the submission engine if the user tries to submit a project
- * that does not include all of the required files.
+ * Thrown by the submission engine if the user tries to submit a project that
+ * does not include all of the required files.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class RequiredFilesMissingException extends Exception
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	// === Methods ============================================================
 
-	/**
-	 * The required file patterns that could not be matched.
-	 */
-	private String[] missingFiles;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of this exception.
 	 * 
-	 * @param files An array of Strings representing the patterns that could
-	 *        not be matched.
+	 * @param files
+	 *            An array of Strings representing the patterns that could not
+	 *            be matched.
 	 */
 	public RequiredFilesMissingException(String[] files)
 	{
 		missingFiles = files;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets an array of required file patterns that could not be matched during
 	 * the submission process.
@@ -56,4 +52,17 @@ public class RequiredFilesMissingException extends Exception
 	{
 		return missingFiles;
 	}
+
+
+	// === Static Variables ===================================================
+	
+	private static final long serialVersionUID = 1L;
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The required file patterns that could not be matched.
+	 */
+	private String[] missingFiles;
 }

@@ -24,19 +24,18 @@ import java.util.regex.Pattern;
  * This class internally converts a DOS-style wildcard pattern into a regular
  * expression that can be used to match filenames.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class FilePattern
 {
-	/**
-	 * The regular expression that represents this file pattern.
-	 */
-	private Pattern pattern;
+	// === Methods ============================================================
 
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new file pattern matcher.
 	 * 
-	 * @param pattern The DOS-style wildcard pattern to match.
+	 * @param pattern
+	 *            The DOS-style wildcard pattern to match.
 	 */
 	public FilePattern(String pattern)
 	{
@@ -52,13 +51,13 @@ public class FilePattern
 			{
 				switch(c)
 				{
-					case '?': // Fall through
-					case '*':
-						buffer.append('.');
-						break;
-					default:
-						buffer.append('\\');
-						break;
+				case '?': // Fall through
+				case '*':
+					buffer.append('.');
+					break;
+				default:
+					buffer.append('\\');
+					break;
 				}
 			}
 
@@ -68,10 +67,13 @@ public class FilePattern
 		this.pattern = Pattern.compile(buffer.toString());
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Determines if the specified path matches the pattern.
 	 * 
-	 * @param path The path to match.
+	 * @param path
+	 *            The path to match.
 	 * 
 	 * @return true if the path matches the pattern; otherwise, false.
 	 */
@@ -80,10 +82,13 @@ public class FilePattern
 		return pattern.matcher(path).matches();
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Determines if the specified File object matches the pattern.
 	 * 
-	 * @param file The File to match.
+	 * @param file
+	 *            The File to match.
 	 * 
 	 * @return true if the File matches the pattern; otherwise, false.
 	 */
@@ -91,4 +96,12 @@ public class FilePattern
 	{
 		return matches(file.getAbsolutePath());
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The regular expression that represents this file pattern.
+	 */
+	private Pattern pattern;
 }

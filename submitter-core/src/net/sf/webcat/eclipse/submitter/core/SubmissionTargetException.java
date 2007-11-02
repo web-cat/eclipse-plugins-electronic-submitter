@@ -18,54 +18,64 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * A general exception type used by the submission engine that wraps other
- * more specific exceptions so that they can be handled in a common manner.
- * This class is also the base for other more specific submission-related
- * exceptions.
+ * A general exception type used by the submission engine that wraps other more
+ * specific exceptions so that they can be handled in a common manner. This
+ * class is also the base for other more specific submission-related exceptions.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmissionTargetException extends Exception
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	// === Methods ============================================================
 
+	// ------------------------------------------------------------------------
 	/**
-	 * A reference to the actual exception that was thrown.
-	 */
-	private Throwable inner;
-
-	/**
-	 * Creates a new instance of this exception with no inner exception.
-	 * This is only used by subclasses that don't represent their errors
-	 * using wrapped exceptions.
+	 * Creates a new instance of this exception with no inner exception. This is
+	 * only used by subclasses that don't represent their errors using wrapped
+	 * exceptions.
 	 */
 	protected SubmissionTargetException()
 	{
 		inner = null;
 	}
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of this exception that wraps the specified
 	 * exception.
 	 * 
-	 * @param inner A Throwable that represents the actual exception that
-	 *        was thrown.
+	 * @param inner
+	 *            A Throwable that represents the actual exception that was
+	 *            thrown.
 	 */
 	public SubmissionTargetException(Throwable inner)
 	{
 		this.inner = inner;
 	}
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the actual exception that is wrapped by this exception.
-	 *  
+	 * 
 	 * @return A Throwable that represents the wrapped exception.
 	 */
 	public Throwable getInnerException()
 	{
 		return inner;
 	}
+
+
+	// === Static Variables ===================================================
+
+	private static final long serialVersionUID = 1L;
+
+	
+	// === Instance variables =================================================
+
+	/**
+	 * A reference to the actual exception that was thrown.
+	 */
+	private Throwable inner;
 }

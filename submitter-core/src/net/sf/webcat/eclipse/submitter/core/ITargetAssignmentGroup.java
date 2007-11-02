@@ -19,29 +19,35 @@ package net.sf.webcat.eclipse.submitter.core;
 
 /**
  * The interface that represents an assignment group in the submission target
- * tree.  An assignment group is a container that holds other assignments and
- * assignment groups.  It may have a name.
+ * tree. An assignment group is a container that holds other assignments and
+ * assignment groups. It may have a name.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITargetAssignmentGroup extends ITarget
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the name of the assignment group.
 	 * 
-	 * @return A String containing the name of the assignment group, or null
-	 *         if the group is unnamed.
+	 * @return A String containing the name of the assignment group, or null if
+	 *         the group is unnamed.
 	 */
 	public String getName();
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Sets the name assignmed to the definition object.
+	 * Sets the name assignmed to the assignment group.
 	 * 
-	 * @param value A String containing the name of the object, or null if no
-	 *              name should be assigned.
+	 * @param value
+	 *            A String containing the name of the assignment group, or null
+	 *            if no name should be assigned.
 	 */
 	void setName(String value);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets a value indicating whether the assignment group and its children
 	 * should be hidden in the user-interface.
@@ -49,11 +55,16 @@ public interface ITargetAssignmentGroup extends ITarget
 	 * @return true if the group should be hidden; otherwise, false.
 	 */
 	public boolean isHidden();
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Sets a value indicating whether or not the object should be hidden.
+	 * Sets a value indicating whether or not the assignment group should be
+	 * hidden.
 	 * 
-	 * @param value true if the object should be hidden; otherwise, false.
+	 * @param value
+	 *            true if the assignment group should be hidden; otherwise,
+	 *            false.
 	 */
 	void setHidden(boolean value);
 }

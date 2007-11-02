@@ -28,12 +28,12 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * The preference page used to edit settings for the electronic submission
  * plug-in.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmissionPreferencePage extends FieldEditorPreferencePage
-		implements
-			IWorkbenchPreferencePage
+        implements IWorkbenchPreferencePage
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the preference page.
 	 */
@@ -43,10 +43,12 @@ public class SubmissionPreferencePage extends FieldEditorPreferencePage
 
 		setPreferenceStore(SubmitterCore.getDefault().getPreferenceStore());
 		setDescription("Please enter the URL provided by your instructor "
-				+ "that contains the assignment definitions to be used by the "
-				+ "electronic submission plug-in in the field below.");
+		        + "that contains the assignment definitions to be used by the "
+		        + "electronic submission plug-in in the field below.");
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates the field editors. Field editors are abstractions of the common
 	 * GUI blocks needed to manipulate various types of preferences. Each field
@@ -55,21 +57,23 @@ public class SubmissionPreferencePage extends FieldEditorPreferencePage
 	public void createFieldEditors()
 	{
 		addField(new StringFieldEditor(SubmitterCore.DEFINITIONS_URL,
-				"&Assignment definition URL:", getFieldEditorParent()));
+		        "&Assignment definition URL:", getFieldEditorParent()));
 
 		addField(new StringFieldEditor(
-				SubmitterCore.IDENTIFICATION_DEFAULTUSERNAME,
-				"Default &username:", getFieldEditorParent()));
+		        SubmitterCore.IDENTIFICATION_DEFAULTUSERNAME,
+		        "Default &username:", getFieldEditorParent()));
 
 		addField(new StringFieldEditor(SubmitterCore.IDENTIFICATION_SMTPSERVER,
-				"&Outgoing (SMTP) mail server:", getFieldEditorParent()));
+		        "&Outgoing (SMTP) mail server:", getFieldEditorParent()));
 
 		addField(new StringFieldEditor(
-				SubmitterCore.IDENTIFICATION_EMAILADDRESS, "&E-mail address:",
-				getFieldEditorParent()));
+		        SubmitterCore.IDENTIFICATION_EMAILADDRESS, "&E-mail address:",
+		        getFieldEditorParent()));
 	}
 
- 	public void init(IWorkbench workbench)
+
+	// ------------------------------------------------------------------------
+	public void init(IWorkbench workbench)
 	{
 	}
 }

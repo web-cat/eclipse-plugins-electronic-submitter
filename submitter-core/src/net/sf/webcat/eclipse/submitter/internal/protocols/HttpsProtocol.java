@@ -43,48 +43,51 @@ import org.eclipse.jface.operation.IRunnableContext;
 
 /**
  * A protocol for the "https" URI scheme that supports sending the submitted
- * file as part of a secure HTTP POST request to a remote server.  This
- * protocol generates an HTTP response that can be displayed to the user in
- * a browser window.
+ * file as part of a secure HTTP POST request to a remote server. This protocol
+ * generates an HTTP response that can be displayed to the user in a browser
+ * window.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class HttpsProtocol implements IProtocol
 {
-	private String response;
-
-	public void submit(IRunnableContext context,
-			IProgressMonitor monitor, SubmissionParameters params,
-			URI transport) throws CoreException, IOException,
-			InterruptedException
+	// === Methods ============================================================
+	
+	// ------------------------------------------------------------------------
+	public void submit(IRunnableContext context, IProgressMonitor monitor,
+	        SubmissionParameters params, URI transport) throws CoreException,
+	        IOException, InterruptedException
 	{
 		try
 		{
 			URL url = transport.toURL();
-			
-			HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+
+			HttpsURLConnection connection = (HttpsURLConnection)url
+			        .openConnection();
 			MultipartBuilder multipart = new MultipartBuilder(connection);
-	
+
 			ITarget asmt = params.getAssignment();
-	
-			Set transportParams = asmt.getTransportParams(context).entrySet();
-			for(Iterator it = transportParams.iterator(); it.hasNext(); )
+
+			Set<Map.Entry<String, String>> transportParams = asmt.getTransportParams(context).entrySet();
+			for(Iterator<Map.Entry<String, String>> it = transportParams.iterator(); it.hasNext();)
 			{
-				Map.Entry entry = (Map.Entry)it.next();
-				String paramName = (String)entry.getKey();
-				String paramValue = (String)entry.getValue();
+				Map.Entry<String, String> entry = it.next();
+				String paramName = entry.getKey();
+				String paramValue = entry.getValue();
 				String convertedValue = params.resolveParameter(paramValue);
-	
+
 				if(paramName.startsWith("$file."))
 				{
 					String key = paramName.substring(6);
 					OutputStream outStream = multipart.beginWriteFile(key,
-							convertedValue, "application/octet-stream");
-	
-					IPackagerRegistry manager = SubmitterCore.getDefault().getPackagerRegistry();
-					IPackager packager = manager.getPackager(params.getAssignment().getPackager(context));
+					        convertedValue, "application/octet-stream");
+
+					IPackagerRegistry manager = SubmitterCore.getDefault()
+					        .getPackagerRegistry();
+					IPackager packager = manager.getPackager(params
+					        .getAssignment().getPackager(context));
 					packager.pack(context, params, outStream);
-	
+
 					multipart.endWriteFile();
 				}
 				else
@@ -92,21 +95,21 @@ public class HttpsProtocol implements IProtocol
 					multipart.writeParameter(paramName, convertedValue);
 				}
 			}
-	
+
 			multipart.close();
-	
+
 			InputStream inStream = connection.getInputStream();
 			StringBuffer buffer = new StringBuffer();
-	
+
 			int nextChar = inStream.read();
 			while(nextChar != -1)
 			{
 				buffer.append((char)nextChar);
 				nextChar = inStream.read();
 			}
-	
+
 			inStream.close();
-	
+
 			response = buffer.toString();
 		}
 		catch(SubmissionTargetException e)
@@ -114,13 +117,25 @@ public class HttpsProtocol implements IProtocol
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean hasResponse()
 	{
 		return true;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public String getResponse()
 	{
 		return response;
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The response sent by the HTTPS server.
+	 */
+	private String response;
 }

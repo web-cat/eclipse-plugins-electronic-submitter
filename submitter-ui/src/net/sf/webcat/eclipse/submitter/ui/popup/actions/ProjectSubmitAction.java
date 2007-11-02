@@ -31,14 +31,13 @@ import org.eclipse.ui.IWorkbenchPart;
  * The action that represents the "Submit..." menu item on popups for the
  * IProject resource type.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class ProjectSubmitAction implements IObjectActionDelegate
 {
-	private IWorkbenchPart part;
+	// === Methods ============================================================
 
-	private IProject currentProject;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * @see IObjectActionDelegate#setActivePart(IAction, IWorkbenchPart)
 	 */
@@ -47,15 +46,19 @@ public class ProjectSubmitAction implements IObjectActionDelegate
 		part = targetPart;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * @see IActionDelegate#run(IAction)
 	 */
 	public void run(IAction action)
 	{
 		SubmitterUIPlugin.getDefault().spawnSubmissionUI(
-				part.getSite().getShell(), currentProject);
+		        part.getSite().getShell(), currentProject);
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * @see IActionDelegate#selectionChanged(IAction, ISelection)
 	 */
@@ -77,4 +80,18 @@ public class ProjectSubmitAction implements IObjectActionDelegate
 			}
 		}
 	}
+
+
+	// === Instance Variables =================================================
+	
+	/**
+	 * The currently active workbench part.
+	 */
+	private IWorkbenchPart part;
+
+	/**
+	 * The project that is currently selected in the workbench (in the
+	 * Navigator, Package Explorer, or similar view).
+	 */
+	private IProject currentProject;
 }

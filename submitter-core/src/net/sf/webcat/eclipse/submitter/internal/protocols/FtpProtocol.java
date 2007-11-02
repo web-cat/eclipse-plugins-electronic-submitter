@@ -38,26 +38,28 @@ import org.eclipse.jface.operation.IRunnableContext;
  * A protocol for the "ftp" URI scheme that supports uploading the submitted
  * file to a remote server via FTP.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class FtpProtocol implements IProtocol
 {
-	public void submit(IRunnableContext context,
-			IProgressMonitor monitor, SubmissionParameters params,
-			URI transport) throws CoreException, IOException,
-			InterruptedException
+	// ------------------------------------------------------------------------
+	public void submit(IRunnableContext context, IProgressMonitor monitor,
+	        SubmissionParameters params, URI transport) throws CoreException,
+	        IOException, InterruptedException
 	{
 		try
 		{
 			URL url = transport.toURL();
-			
+
 			URLConnection connection = url.openConnection();
 			OutputStream outStream = connection.getOutputStream();
-	
-			IPackagerRegistry manager = SubmitterCore.getDefault().getPackagerRegistry();
-			IPackager packager = manager.getPackager(params.getAssignment().getPackager(context));
+
+			IPackagerRegistry manager = SubmitterCore.getDefault()
+			        .getPackagerRegistry();
+			IPackager packager = manager.getPackager(params.getAssignment()
+			        .getPackager(context));
 			packager.pack(context, params, outStream);
-			
+
 			outStream.close();
 		}
 		catch(SubmissionTargetException e)
@@ -65,11 +67,15 @@ public class FtpProtocol implements IProtocol
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean hasResponse()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public String getResponse()
 	{
 		return null;

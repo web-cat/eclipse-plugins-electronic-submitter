@@ -57,99 +57,91 @@ import org.eclipse.jface.operation.IRunnableContext;
  * A protocol for the "mailto" URI scheme that supports sending the submitted
  * file as an e-mail attachment.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class MailtoProtocol implements IProtocol
 {
-	private class MailAuthenticator extends Authenticator
-	{
-		private String username;
-		private String password;
-		
-		public MailAuthenticator(String user, String pass)
-		{
-			username = user;
-			password = pass;
-		}
-		
-		protected PasswordAuthentication getPasswordAuthentication()
-		{
-			return new PasswordAuthentication(username, password);
-		}
-	}
+	// === Methods ============================================================
 
-	public void submit(IRunnableContext context,
-			IProgressMonitor monitor, SubmissionParameters params,
-			URI transport) throws CoreException, IOException,
-			InterruptedException
+	// ------------------------------------------------------------------------
+	public void submit(IRunnableContext context, IProgressMonitor monitor,
+	        SubmissionParameters params, URI transport) throws CoreException,
+	        IOException, InterruptedException
 	{
 		try
 		{
 			// Create the archive in a temp file.
 			File zipFile = File.createTempFile("submitter_", ".zip");
 			FileOutputStream outStream = new FileOutputStream(zipFile);
-	
-			IPackagerRegistry manager = SubmitterCore.getDefault().getPackagerRegistry();
-			IPackager packager = manager.getPackager(params.getAssignment().getPackager(context));
+
+			IPackagerRegistry manager = SubmitterCore.getDefault()
+			        .getPackagerRegistry();
+			IPackager packager = manager.getPackager(params.getAssignment()
+			        .getPackager(context));
 			packager.pack(context, params, outStream);
-	
+
 			outStream.close();
-	
+
 			Properties props = System.getProperties();
-			props.put("mail.smtp.host", SubmitterCore.getDefault()
-					.getOption(SubmitterCore.IDENTIFICATION_SMTPSERVER));
-			
+			props.put("mail.smtp.host", SubmitterCore.getDefault().getOption(
+			        SubmitterCore.IDENTIFICATION_SMTPSERVER));
+
 			ITarget asmt = params.getAssignment();
-	
-			String authString = (String)asmt.getTransportParams(context).get("auth");
+
+			String authString = asmt.getTransportParams(context).get("auth");
 			boolean auth = false;
 			if(authString != null)
 				auth = Boolean.parseBoolean(authString);
-	
+
 			Session session;
 			if(auth)
 			{
 				props.put("mail.smtp.auth", "true");
 				session = Session.getDefaultInstance(props,
-						new MailAuthenticator(params.getUsername(), params.getPassword()));
+				        new MailAuthenticator(params.getUsername(), params
+				                .getPassword()));
 			}
 			else
 				session = Session.getDefaultInstance(props, null);
-	
+
 			try
 			{
 				Message message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(SubmitterCore.getDefault()
-						.getOption(SubmitterCore.IDENTIFICATION_EMAILADDRESS)));
-	
-				String to = params.resolveParameter(transport.getSchemeSpecificPart());
-				String subject = params.resolveParameter(
-						(String)asmt.getTransportParams(context).get("subject"));
-	
-				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+				        .getOption(SubmitterCore.IDENTIFICATION_EMAILADDRESS)));
+
+				String to = params.resolveParameter(transport
+				        .getSchemeSpecificPart());
+				String subject = params.resolveParameter(asmt
+				        .getTransportParams(context).get("subject"));
+
+				message.setRecipients(Message.RecipientType.TO, InternetAddress
+				        .parse(to));
 				message.setSubject(subject);
 				message.setSentDate(new Date());
-	
+
 				Multipart multiPart = new MimeMultipart();
-	
-				Set transportParams = asmt.getTransportParams(context).entrySet();
-				for(Iterator it = transportParams.iterator(); it.hasNext(); )
+
+				Set<Map.Entry<String, String>> transportParams = asmt
+				        .getTransportParams(context).entrySet();
+				for(Iterator<Map.Entry<String, String>> it = transportParams
+				        .iterator(); it.hasNext();)
 				{
-					Map.Entry entry = (Map.Entry)it.next();
-					String paramName = (String)entry.getKey();
-					String paramValue = (String)entry.getValue();
+					Map.Entry<String, String> entry = it.next();
+					String paramName = entry.getKey();
+					String paramValue = entry.getValue();
 					String convertedValue = params.resolveParameter(paramValue);
-	
+
 					if(paramName.startsWith("$file."))
 					{
 						MimeBodyPart filePart = new MimeBodyPart();
 						filePart.setFileName(convertedValue);
-						filePart.setDataHandler(new DataHandler(new FileDataSource(
-								zipFile)));
+						filePart.setDataHandler(new DataHandler(
+						        new FileDataSource(zipFile)));
 						multiPart.addBodyPart(filePart);
 					}
 				}
-	
+
 				message.setContent(multiPart);
 				Transport.send(message);
 			}
@@ -157,7 +149,7 @@ public class MailtoProtocol implements IProtocol
 			{
 				throw new IOException(e.getMessage());
 			}
-	
+
 			zipFile.delete();
 		}
 		catch(SubmissionTargetException e)
@@ -165,13 +157,44 @@ public class MailtoProtocol implements IProtocol
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean hasResponse()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public String getResponse()
 	{
 		return null;
+	}
+
+
+	// === Nested Classes =====================================================
+
+	/**
+	 * An authenticator subclass for a mail session that uses a username and
+	 * password provided by the user.
+	 */
+	private class MailAuthenticator extends Authenticator
+	{
+		private String username;
+
+		private String password;
+
+
+		public MailAuthenticator(String user, String pass)
+		{
+			username = user;
+			password = pass;
+		}
+
+
+		protected PasswordAuthentication getPasswordAuthentication()
+		{
+			return new PasswordAuthentication(username, password);
+		}
 	}
 }

@@ -21,25 +21,13 @@ package net.sf.webcat.eclipse.submitter.core;
  * Encapsulates information about a parsing error in the submission definitions
  * file.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class TargetParseError
 {
-	/**
-	 * The line number at which the error occurred.
-	 */
-	private int line;
-
-	/**
-	 * The column at which the error occurred.
-	 */
-	private int column;
-
-	/**
-	 * The description of the error that occurred.
-	 */
-	private String message;
-
+	// === Methods ============================================================
+	
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the error object with the specified line and
 	 * column numbers and description.
@@ -58,6 +46,8 @@ public class TargetParseError
 		this.message = message;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the line number at which the error occurred.
 	 * 
@@ -68,6 +58,8 @@ public class TargetParseError
 		return line;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the column number at which the error occurred.
 	 * 
@@ -78,6 +70,8 @@ public class TargetParseError
 		return column;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the description of the error that occurred.
 	 * 
@@ -88,6 +82,8 @@ public class TargetParseError
 		return message;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Produces a human-readable error message from this error object.
 	 * 
@@ -97,4 +93,22 @@ public class TargetParseError
 	{
 		return "Line " + line + ", column " + column + ": " + message;
 	}
+
+	
+	// === Instance Variables =================================================
+
+	/**
+	 * The line number at which the error occurred.
+	 */
+	private int line;
+
+	/**
+	 * The column at which the error occurred.
+	 */
+	private int column;
+
+	/**
+	 * The description of the error that occurred.
+	 */
+	private String message;
 }

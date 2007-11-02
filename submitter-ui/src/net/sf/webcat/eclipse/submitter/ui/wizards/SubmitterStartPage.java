@@ -19,6 +19,7 @@ package net.sf.webcat.eclipse.submitter.ui.wizards;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
 import net.sf.webcat.eclipse.submitter.core.ITarget;
@@ -26,42 +27,44 @@ import net.sf.webcat.eclipse.submitter.core.RequiredFilesMissingException;
 import net.sf.webcat.eclipse.submitter.core.SubmissionParameters;
 import net.sf.webcat.eclipse.submitter.core.SubmissionTargetException;
 import net.sf.webcat.eclipse.submitter.core.SubmitterCore;
+import net.sf.webcat.eclipse.submitter.ui.SWTUtil;
+import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 /**
- * The main page of the submission wizard contains the assignment tree and
- * other user-input fields.
+ * The main page of the submission wizard contains the assignment tree and other
+ * user-input fields.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmitterStartPage extends WizardPage
 {
-	private ISubmissionEngine engine;
+	// === Methods ============================================================
 
-	private IProject project;
-
-	private TreeViewer assignmentTree;
-
-	private Text username;
-
-	private Text password;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the main wizard page.
 	 * 
@@ -72,17 +75,17 @@ public class SubmitterStartPage extends WizardPage
 	 */
 	protected SubmitterStartPage(ISubmissionEngine engine, IProject project)
 	{
-		super("Submission Start Page");
+		super(Messages.STARTPAGE_PAGE_NAME);
 
-		setTitle("Electronic Submission");
-		setDescription("Please choose the assignment to which you want to submit below, "
-				+ "and enter\nthe username and password that you use to connect to "
-				+ "the electronic grader.");
+		setTitle(Messages.STARTPAGE_PAGE_TITLE);
+		setDescription(Messages.STARTPAGE_PAGE_DESCRIPTION);
 
 		this.engine = engine;
 		this.project = project;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the assignment currently selected in the tree.
 	 * 
@@ -91,10 +94,13 @@ public class SubmitterStartPage extends WizardPage
 	 */
 	public ITarget getSelectedAssignment()
 	{
-		IStructuredSelection sel = (IStructuredSelection)assignmentTree.getSelection();
+		IStructuredSelection sel = (IStructuredSelection)assignmentTree
+		        .getSelection();
 		return (ITarget)sel.getFirstElement();
 	}
 
+
+	// ------------------------------------------------------------------------
 	public void createControl(Composite parent)
 	{
 		IRunnableContext context = getContainer();
@@ -104,40 +110,85 @@ public class SubmitterStartPage extends WizardPage
 		gl.numColumns = 2;
 		composite.setLayout(gl);
 
-		new Label(composite, SWT.NONE).setText("Assignment:");
-		assignmentTree = new TreeViewer(composite);
-		assignmentTree.setContentProvider(new SubmissionTargetsContentProvider(context));
-		assignmentTree.setLabelProvider(new SubmissionTargetsLabelProvider());
-		assignmentTree.setInput(engine.getRoot());
-		
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.heightHint = 150;
-		assignmentTree.getControl().setLayoutData(gd);
-		assignmentTree.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent e)
+		new Label(composite, SWT.NONE).setText(Messages.STARTPAGE_PROJECT);
+		Composite projectComp = new Composite(composite, SWT.NONE);
+		GridLayout pgl = new GridLayout();
+		pgl.numColumns = 2;
+		pgl.marginWidth = 0;
+		pgl.marginHeight = 0;
+
+		projectComp.setLayout(pgl);
+		GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		projectComp.setLayoutData(gd);
+
+		projectField = new Text(projectComp, SWT.BORDER | SWT.READ_ONLY);
+		gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		projectField.setLayoutData(gd);
+		if(project != null)
+			projectField.setText(project.getName());
+
+		Button projectChoose = new Button(projectComp, SWT.NONE);
+		projectChoose.setText(Messages.STARTPAGE_CHOOSE_PROJECT);
+		projectChoose.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
 			{
-				assignmentTreeSelectionChanged();
+				chooseProjectToSubmit();
 			}
 		});
+		gd = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+		gd.widthHint = SWTUtil.getButtonWidthHint(projectChoose);
+		projectChoose.setLayoutData(gd);
 
-		new Label(composite, SWT.NONE).setText("Username:");
+		Label separator = new Label(composite, SWT.HORIZONTAL | SWT.SEPARATOR);
+		gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		gd.horizontalSpan = 2;
+		gd.heightHint = 12;
+		separator.setLayoutData(gd);
+
+		Label submitLabel = new Label(composite, SWT.NONE);
+		submitLabel.setText(Messages.STARTPAGE_SUBMIT_AS);
+		gd = new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false);
+		submitLabel.setLayoutData(gd);
+
+		assignmentTree = new TreeViewer(composite);
+		assignmentTree.setContentProvider(new SubmissionTargetsContentProvider(
+		        context));
+		assignmentTree.setLabelProvider(new SubmissionTargetsLabelProvider());
+		assignmentTree.setInput(engine.getRoot());
+
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.heightHint = 150;
+		assignmentTree.getControl().setLayoutData(gd);
+		assignmentTree
+		        .addSelectionChangedListener(new ISelectionChangedListener()
+		        {
+			        public void selectionChanged(SelectionChangedEvent e)
+			        {
+				        assignmentTreeSelectionChanged();
+			        }
+		        });
+
+		new Label(composite, SWT.NONE).setText(Messages.STARTPAGE_USERNAME);
 		username = new Text(composite, SWT.BORDER);
 		gd = new GridData();
 		gd.widthHint = 144;
 		username.setLayoutData(gd);
-		username.addModifyListener(new ModifyListener() {
+		username.addModifyListener(new ModifyListener()
+		{
 			public void modifyText(ModifyEvent e)
 			{
 				updatePageComplete();
 			}
 		});
 
-		new Label(composite, SWT.NONE).setText("Password:");
+		new Label(composite, SWT.NONE).setText(Messages.STARTPAGE_PASSWORD);
 		password = new Text(composite, SWT.BORDER | SWT.PASSWORD);
 		gd = new GridData();
 		gd.widthHint = 144;
 		password.setLayoutData(gd);
-		password.addModifyListener(new ModifyListener() {
+		password.addModifyListener(new ModifyListener()
+		{
 			public void modifyText(ModifyEvent e)
 			{
 				updatePageComplete();
@@ -147,22 +198,57 @@ public class SubmitterStartPage extends WizardPage
 		setControl(composite);
 
 		String defUsername = SubmitterCore.getDefault().getOption(
-				SubmitterCore.IDENTIFICATION_DEFAULTUSERNAME);
+		        SubmitterCore.IDENTIFICATION_DEFAULTUSERNAME);
 		username.setText(defUsername);
 
 		expandAllLocalGroups(engine.getRoot(), context);
+		initializationComplete = true;
 	}
 
+
+	// ------------------------------------------------------------------------
+	private void chooseProjectToSubmit()
+	{
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot()
+		        .getProjects();
+		ArrayList<IProject> filteredProjects = new ArrayList<IProject>();
+		for(int i = 0; i < allProjects.length; i++)
+			if(allProjects[i].isOpen())
+				filteredProjects.add(allProjects[i]);
+
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(
+		        getShell(), new WorkbenchLabelProvider());
+
+		dialog.setElements(filteredProjects.toArray());
+		dialog.setMessage(Messages.STARTPAGE_CHOOSE_PROJECT_TITLE);
+		dialog.setMatchEmptyString(true);
+		dialog.setMultipleSelection(false);
+
+		if(project != null)
+			dialog.setInitialSelections(new IProject[] { project });
+
+		int result = dialog.open();
+		if(result == Window.OK)
+		{
+			project = (IProject)dialog.getResult()[0];
+			projectField.setText(project.getName());
+		}
+
+		updatePageComplete();
+	}
+
+
+	// ------------------------------------------------------------------------
 	private void expandAllLocalGroups(ITarget obj, IRunnableContext context)
 	{
 		try
 		{
 			ITarget[] children = obj.getChildren(context);
-	
+
 			for(int i = 0; i < children.length; i++)
 			{
 				ITarget child = children[i];
-	
+
 				if(child.isLoaded())
 				{
 					if(assignmentTree.isExpandable(child))
@@ -178,43 +264,75 @@ public class SubmitterStartPage extends WizardPage
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	private void assignmentTreeSelectionChanged()
 	{
 		updatePageComplete();
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean canFlipToNextPage()
 	{
 		return isPageComplete();
 	}
 
+
+	// ------------------------------------------------------------------------
+	private void setErrorMessageIfInitialized(String msg)
+	{
+		if(initializationComplete)
+			setErrorMessage(msg);
+	}
+
+
+	// ------------------------------------------------------------------------
 	private void updatePageComplete()
 	{
-		IStructuredSelection sel = (IStructuredSelection)assignmentTree.getSelection();
+		if(project == null)
+		{
+			setPageComplete(false);
+			setErrorMessageIfInitialized(Messages.STARTPAGE_ERROR_NO_PROJECT);
+			return;
+		}
+
+		IStructuredSelection sel = (IStructuredSelection)assignmentTree
+		        .getSelection();
 		if(sel.isEmpty())
 		{
 			setPageComplete(false);
+			setErrorMessageIfInitialized(Messages.STARTPAGE_ERROR_NO_TARGET);
 			return;
 		}
 
 		ITarget object = getSelectedAssignment();
 
 		if(object == null || !object.isActionable())
+		{
 			setPageComplete(false);
+			setErrorMessageIfInitialized(Messages.STARTPAGE_ERROR_INVALID_TARGET);
+			return;
+		}
 		else
 			setPageComplete(true);
 
 		if(username.getText().trim().length() == 0)
 		{
 			setPageComplete(false);
+			setErrorMessageIfInitialized(Messages.STARTPAGE_ERROR_NO_USERNAME);
 			return;
 		}
+
+		setErrorMessage(null);
 	}
 
+
+	// ------------------------------------------------------------------------
 	public IWizardPage getNextPage()
 	{
 		SubmitterSummaryPage nextPage = (SubmitterSummaryPage)super
-				.getNextPage();
+		        .getNextPage();
 
 		if(isPageComplete())
 		{
@@ -228,17 +346,13 @@ public class SubmitterStartPage extends WizardPage
 			{
 				engine.submitProject(this.getContainer(), params);
 
-				nextPage
-						.setResultCode(SubmitterSummaryPage.RESULT_OK,
-								"Please click the \"Finish\" button to exit the wizard.");
+				nextPage.setResultCode(SubmitterSummaryPage.RESULT_OK,
+				        Messages.STARTPAGE_CLICK_FINISH_TO_EXIT);
 			}
 			catch(RequiredFilesMissingException e)
 			{
 				StringBuffer buffer = new StringBuffer();
-				buffer
-						.append("Your project could not be submitted because it was missing some "
-								+ "required files.  The following files could not be found in your "
-								+ "project:\n\n");
+				buffer.append(Messages.STARTPAGE_ERROR_REQUIRED_FILES_MISSING);
 
 				for(int i = 0; i < e.getMissingFiles().length; i++)
 				{
@@ -249,49 +363,75 @@ public class SubmitterStartPage extends WizardPage
 				}
 
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_INCOMPLETE,
-						buffer.toString());
+				        buffer.toString());
 			}
 			catch(MalformedURLException e)
 			{
-				nextPage
-						.setResultCode(
-								SubmitterSummaryPage.RESULT_ERROR,
-								"The URL to which the submission was to be made is malformed. "
-										+ "The likely cause is that there is an error in the assignment "
-										+ "definition file, or that you do not have a plug-in installed "
-										+ "for the required protocol.  If you are seeing this error, you "
-										+ "may wish to notify your instructor.\n\n"
-										+ "Details: \n" + e.toString());
+				nextPage.setResultCode(SubmitterSummaryPage.RESULT_ERROR,
+				        Messages.STARTPAGE_ERROR_BAD_URL + e.toString());
 			}
 			catch(UnknownHostException e)
 			{
-				nextPage
-						.setResultCode(
-								SubmitterSummaryPage.RESULT_ERROR,
-								"The host to which the submission was to be made could not be "
-										+ "reached.  Your network connection may be at fault, or there "
-										+ "may be an error in the assignment definition file.\n\n"
-										+ "If you believe your network connection is not at fault, "
-										+ "you may wish to notify your instructor.\n\n"
-										+ "Details: \n" + e.toString());
+				nextPage.setResultCode(SubmitterSummaryPage.RESULT_ERROR,
+				        Messages.STARTPAGE_ERROR_COULD_NOT_CONNECT
+				                + e.toString());
 			}
 			catch(InterruptedException e)
 			{
-				nextPage
-						.setResultCode(
-								SubmitterSummaryPage.RESULT_CANCELED,
-								"The submission was canceled.\n\n"
-										+ "However, if this submission was being made to a remote system, "
-										+ "that system may have already recorded a partial submission.");
+				nextPage.setResultCode(SubmitterSummaryPage.RESULT_CANCELED,
+				        Messages.STARTPAGE_SUBMISSION_CANCELED);
 			}
 			catch(Throwable e)
 			{
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_ERROR,
-						"The following generic error occurred while submitting:\n\n"
-								+ e.toString());
+				        Messages.STARTPAGE_ERROR_GENERIC + e.toString());
 			}
 		}
 
 		return nextPage;
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The submission engine instance that should be used by this wizard to
+	 * submit the project.
+	 */
+	private ISubmissionEngine engine;
+
+	/**
+	 * The currently selected project that will be submitted by the wizard.
+	 */
+	private IProject project;
+
+	/**
+	 * A text field that displays the name of the currently selected project.
+	 */
+	private Text projectField;
+
+	/**
+	 * A tree that displays the submission targets that can be selected for
+	 * submission.
+	 */
+	private TreeViewer assignmentTree;
+
+	/**
+	 * A text field that contains the username of the person submitting the
+	 * project.
+	 */
+	private Text username;
+
+	/**
+	 * A text field that contains the password to be used to authenticate with
+	 * the remote submission target.
+	 */
+	private Text password;
+
+	/**
+	 * Set to false while control initialization occurs so that an error message
+	 * will not be displayed in the wizard until actual user input occurs, as
+	 * per Eclipse user interface guidelines.
+	 */
+	private boolean initializationComplete = false;
 }

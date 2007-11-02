@@ -32,16 +32,341 @@ import org.eclipse.jface.operation.IRunnableContext;
 import org.w3c.dom.Node;
 
 /**
- * Represents an imported group in the submission target tree.  An imported
- * group refers to an external XML submission target file that will be merged
- * with the tree at the location of the import group node.  The imported group
- * must have a name and a valid URL to the external file.
- *  
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * Represents an imported group in the submission target tree. An imported group
+ * refers to an external XML submission target file that will be merged with the
+ * tree at the location of the import group node. The imported group must have a
+ * name and a valid URL to the external file.
+ * 
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class TargetImportGroup extends AbstractTarget implements
-		ITargetImportGroup
+        ITargetImportGroup
 {
+	// === Methods ============================================================
+	
+	// ------------------------------------------------------------------------
+	/**
+	 * Creates a new imported group node with the specified parent.
+	 * 
+	 * @param parent
+	 *            The node that will be assigned the parent of the new node.
+	 */
+	public TargetImportGroup(AbstractTarget parent)
+	{
+		super(parent);
+
+		loaded = false;
+	}
+
+
+	// ------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
+	public Object getAdapter(Class adapterClass)
+	{
+		if(adapterClass.equals(INameableTarget.class))
+			return new NameableDefinitionAdapter(this);
+		else if(adapterClass.equals(IHideableTarget.class))
+			return new HideableDefinitionAdapter(this);
+		else
+			return super.getAdapter(adapterClass);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public boolean isContainer()
+	{
+		return true;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public boolean isNested()
+	{
+		return true;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public boolean isLoaded()
+	{
+		return loaded;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String getName()
+	{
+		return name;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setName(String value)
+	{
+		String oldValue = name;
+		name = value;
+
+		tryFireTargetObjectChanged("name", oldValue, name);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String getHref()
+	{
+		return ref;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setHref(String url)
+	{
+		String oldValue = ref;
+		ref = url;
+
+		tryFireTargetObjectChanged("ref", oldValue, ref);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public boolean isHidden()
+	{
+		return hidden;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setHidden(boolean value)
+	{
+		boolean oldValue = hidden;
+		hidden = value;
+
+		tryFireTargetObjectChanged("hidden", new Boolean(oldValue),
+		        new Boolean(hidden));
+	}
+
+
+	// ------------------------------------------------------------------------
+	public boolean isActionable()
+	{
+		return false;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public int getAmbiguityResolution(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getAmbiguityResolution(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String[] getIncludes(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getIncludes(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String[] getExcludes(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getExcludes(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String[] getRequired(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getRequired(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String getTransport(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getTransport(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public Map<String, String> getTransportParams(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getTransportParams(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String getPackager(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getPackager(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public Map<String, String> getPackagerParams(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getPackagerParams(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public ITarget[] getChildren(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		if(!loaded)
+			loadImportedDefinitions(context);
+		return super.getChildren(context);
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void parse(Node parentNode) throws SubmissionTargetException
+	{
+		Node nameNode = parentNode.getAttributes().getNamedItem("name");
+		Node refNode = parentNode.getAttributes().getNamedItem("href");
+		Node hiddenNode = parentNode.getAttributes().getNamedItem("hidden");
+
+		String hiddenString = null;
+
+		if(nameNode != null)
+			name = nameNode.getNodeValue();
+
+		if(refNode != null)
+			ref = refNode.getNodeValue();
+
+		if(hiddenNode != null)
+			hiddenString = hiddenNode.getNodeValue();
+
+		hidden = new Boolean(hiddenString).booleanValue();
+	}
+
+
+	// ------------------------------------------------------------------------
+	private void loadImportedDefinitions(IRunnableContext context)
+	        throws SubmissionTargetException
+	{
+		SubmissionEngine engine = new SubmissionEngine();
+
+		try
+		{
+			engine.openDefinitions(new URL(ref), context);
+			ITarget root = engine.getRoot();
+
+			copyFrom(root, context);
+
+			loaded = true;
+		}
+		catch(TargetParseException e)
+		{
+			throw e;
+		}
+		catch(Exception e)
+		{
+			throw new SubmissionTargetException(e);
+		}
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void writeToXML(PrintWriter writer, int indentLevel)
+	{
+		// Write opening tag.
+		padToIndent(indentLevel, writer);
+		writer.print("<import-group name=\"");
+		writeXMLString(name, writer);
+		writer.print("\"");
+
+		if(hidden)
+			writer.print(" hidden=\"true\"");
+
+		writer.print(" href=\"");
+		writeXMLString(ref.toString(), writer);
+		writer.println("\"/>");
+	}
+
+	
+	// === Nested Classes =====================================================
+	
+	/**
+	 * An adapter class that manages the INameableDefinition interface for this
+	 * assignment group.
+	 */
+	private class NameableDefinitionAdapter implements INameableTarget
+	{
+		private TargetImportGroup asmt;
+
+
+		public NameableDefinitionAdapter(TargetImportGroup asmt)
+		{
+			this.asmt = asmt;
+		}
+
+
+		public String getName()
+		{
+			return asmt.getName();
+		}
+
+
+		public void setName(String value)
+		{
+			asmt.setName(value);
+		}
+	}
+
+	/**
+	 * An adapter class that manages the IHideableDefinition interface for this
+	 * assignment group.
+	 */
+	private class HideableDefinitionAdapter implements IHideableTarget
+	{
+		private TargetImportGroup asmt;
+
+
+		public HideableDefinitionAdapter(TargetImportGroup asmt)
+		{
+			this.asmt = asmt;
+		}
+
+
+		public boolean isHidden()
+		{
+			return asmt.isHidden();
+		}
+
+
+		public void setHidden(boolean value)
+		{
+			asmt.setHidden(value);
+		}
+	}
+
+	
+	// === Instance Variables =================================================
+
 	/**
 	 * The name of the assignment group.
 	 */
@@ -62,259 +387,4 @@ public class TargetImportGroup extends AbstractTarget implements
 	 * Indicates whether the group has been loaded from the external file.
 	 */
 	private boolean loaded;
-
-	/**
-	 * An adapter class that manages the INameableDefinition interface for
-	 * this assignment group.
-	 */
-	private class NameableDefinitionAdapter implements INameableTarget
-	{
-		private TargetImportGroup asmt;
-
-		public NameableDefinitionAdapter(TargetImportGroup asmt)
-		{
-			this.asmt = asmt;
-		}
-
-		public String getName()
-		{
-			return asmt.getName();
-		}
-		
-		public void setName(String value)
-		{
-			asmt.setName(value);
-		}
-	}
-
-	/**
-	 * An adapter class that manages the IHideableDefinition interface for
-	 * this assignment group.
-	 */
-	private class HideableDefinitionAdapter implements IHideableTarget
-	{
-		private TargetImportGroup asmt;
-
-		public HideableDefinitionAdapter(TargetImportGroup asmt)
-		{
-			this.asmt = asmt;
-		}
-
-		public boolean isHidden()
-		{
-			return asmt.isHidden();
-		}
-		
-		public void setHidden(boolean value)
-		{
-			asmt.setHidden(value);
-		}
-	}
-
-	/**
-	 * Creates a new imported group node with the specified parent.
-	 * 
-	 * @param parent The node that will be assigned the parent of the new
-	 *               node.
-	 */
-	public TargetImportGroup(AbstractTarget parent)
-	{
-		super(parent);
-
-		loaded = false;
-	}
-
-	public Object getAdapter(Class adapterClass)
-	{
-		if (adapterClass.equals(INameableTarget.class))
-			return new NameableDefinitionAdapter(this);
-		else if (adapterClass.equals(IHideableTarget.class))
-			return new HideableDefinitionAdapter(this);
-		else
-			return super.getAdapter(adapterClass);
-	}
-
-	public boolean isContainer()
-	{
-		return true;
-	}
-
-	public boolean isNested()
-	{
-		return true;
-	}
-
-	public boolean isLoaded()
-	{
-		return loaded;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String value)
-	{
-		String oldValue = name;
-		name = value;
-		
-		tryFireTargetObjectChanged("name", oldValue, name);
-	}
-
-	public String getHref()
-	{
-		return ref;
-	}
-
-	public void setHref(String url)
-	{
-		String oldValue = ref;
-		ref = url;
-
-		tryFireTargetObjectChanged("ref", oldValue, ref);
-	}
-
-	public boolean isHidden()
-	{
-		return hidden;
-	}
-	
-	public void setHidden(boolean value)
-	{
-		boolean oldValue = hidden;
-		hidden = value;
-
-		tryFireTargetObjectChanged(
-				"hidden", new Boolean(oldValue), new Boolean(hidden));
-	}
-
-	public boolean isActionable()
-	{
-		return false;
-	}
-
-	public String[] getIncludes(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getIncludes(context);
-	}
-
-	public String[] getExcludes(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getExcludes(context);
-	}
-
-	public String[] getRequired(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getRequired(context);
-	}
-
-	public String getTransport(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getTransport(context);
-	}
-
-	public Map getTransportParams(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getTransportParams(context);
-	}
-
-	public String getPackager(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getPackager(context);
-	}
-
-	public Map getPackagerParams(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getPackagerParams(context);
-	}
-
-	public ITarget[] getChildren(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		if (!loaded)
-			loadImportedDefinitions(context);
-		return super.getChildren(context);
-	}
-
-	public void parse(Node parentNode) throws SubmissionTargetException
-	{
-		Node nameNode = parentNode.getAttributes().getNamedItem("name");
-		Node refNode = parentNode.getAttributes().getNamedItem("href");
-		Node hiddenNode = parentNode.getAttributes().getNamedItem("hidden");
-
-		String hiddenString = null;
-
-		if (nameNode != null)
-			name = nameNode.getNodeValue();
-
-		if (refNode != null)
-			ref = refNode.getNodeValue();
-
-		if (hiddenNode != null)
-			hiddenString = hiddenNode.getNodeValue();
-
-		hidden = new Boolean(hiddenString).booleanValue();
-	}
-
-	private void loadImportedDefinitions(IRunnableContext context)
-			throws SubmissionTargetException
-	{
-		SubmissionEngine engine = new SubmissionEngine();
-
-		try
-		{
-			engine.openDefinitions(new URL(ref), context);
-			ITarget root = engine.getRoot();
-
-			copyFrom(root, context);
-
-			loaded = true;
-		}
-		catch (TargetParseException e)
-		{
-			throw e;
-		}
-		catch (Exception e)
-		{
-			throw new SubmissionTargetException(e);
-		}
-	}
-
-	public void writeToXML(PrintWriter writer, int indentLevel)
-	{
-		// Write opening tag.
-		padToIndent(indentLevel, writer);
-		writer.print("<import-group name=\"");
-		writeXMLString(name, writer);
-		writer.print("\"");
-
-		if (hidden)
-			writer.print(" hidden=\"true\"");
-
-		writer.print(" href=\"");
-		writeXMLString(ref.toString(), writer);
-		writer.println("\"/>");
-	}
 }

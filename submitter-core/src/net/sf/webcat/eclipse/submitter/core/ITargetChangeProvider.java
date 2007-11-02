@@ -18,10 +18,20 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * This interface allows users to hook listeners into a submission target in
+ * order to get notifications when a target changes due to a call to one of
+ * its set*() methods.
+ * 
+ * This interface is meant to be used as part of a visual editor for submission
+ * target files.
+ * 
+ * This interface is not intended to be implemented by clients.
+ *
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITargetChangeProvider
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Adds the listener to the list of listeners that will be notified on
 	 * target changes.
@@ -30,7 +40,9 @@ public interface ITargetChangeProvider
 	 *            a target change listener to be added
 	 */
 	void addTargetChangedListener(ITargetChangedListener listener);
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Delivers change event to all the registered listeners.
 	 * 
@@ -38,10 +50,12 @@ public interface ITargetChangeProvider
 	 *            a change event that will be passed to all the listeners
 	 */
 	public void fireTargetChanged(ITargetChangedEvent event);
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Notifies listeners that a property of a target object changed. This is
-	 * a utility method that will create a target event and fire it.
+	 * Notifies listeners that a property of a target object changed. This is a
+	 * utility method that will create a target event and fire it.
 	 * 
 	 * @param object
 	 *            an affected target object
@@ -53,8 +67,10 @@ public interface ITargetChangeProvider
 	 *            the new value of the property
 	 */
 	public void fireTargetObjectChanged(ITarget object, String property,
-			Object oldValue, Object newValue);
+	        Object oldValue, Object newValue);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Takes the listener off the list of registered change listeners.
 	 * 

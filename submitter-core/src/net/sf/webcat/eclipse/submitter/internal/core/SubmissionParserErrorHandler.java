@@ -30,46 +30,60 @@ import org.xml.sax.SAXParseException;
  * submission definitions file so they can be thrown as a single exception if
  * any occur.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmissionParserErrorHandler implements ErrorHandler
 {
-	/**
-	 * A Vector that keeps track of all the errors encountered during parsing.
-	 */
-	private Vector errors;
+	// === Methods ============================================================
 
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new submission parser error handler.
-	 *  
 	 */
 	public SubmissionParserErrorHandler()
 	{
-		errors = new Vector();
+		errors = new Vector<TargetParseError>();
 	}
 
-	public void warning(SAXParseException arg0) throws SAXException
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Handles a warning that occurs during parsing.
+	 */
+	public void warning(SAXParseException e) throws SAXException
 	{
 	}
 
-	public void error(SAXParseException arg0) throws SAXException
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Handles an error that occurs during parsing.
+	 */
+	public void error(SAXParseException e) throws SAXException
 	{
-		TargetParseError error = new TargetParseError(arg0
-				.getLineNumber(), arg0.getColumnNumber(), arg0.getMessage());
+		TargetParseError error = new TargetParseError(e.getLineNumber(), e
+		        .getColumnNumber(), e.getMessage());
 		errors.add(error);
 	}
 
-	public void fatalError(SAXParseException arg0) throws SAXException
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Handles a fatal error that occurs during parsing.
+	 */
+	public void fatalError(SAXParseException e) throws SAXException
 	{
-		TargetParseError error = new TargetParseError(arg0
-				.getLineNumber(), arg0.getColumnNumber(), arg0.getMessage());
+		TargetParseError error = new TargetParseError(e.getLineNumber(), e
+		        .getColumnNumber(), e.getMessage());
 		errors.add(error);
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the list of errors that occurred during parsing.
 	 * 
-	 * @return An array of DefinitionParseError objects, or null if no errors
+	 * @return An array of TargetParseError objects, or null if no errors
 	 *         occurred.
 	 */
 	public TargetParseError[] getErrors()
@@ -79,8 +93,16 @@ public class SubmissionParserErrorHandler implements ErrorHandler
 
 		TargetParseError[] array = new TargetParseError[errors.size()];
 		for(int i = 0; i < errors.size(); i++)
-			array[i] = (TargetParseError)errors.get(i);
+			array[i] = errors.get(i);
 
 		return array;
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * A Vector that keeps track of all the errors encountered during parsing.
+	 */
+	private Vector<TargetParseError> errors;
 }

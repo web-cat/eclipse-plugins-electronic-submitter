@@ -33,138 +33,103 @@ import org.w3c.dom.Node;
  * assignment group is a container for other groups and assignments, and
  * contains common settings that can be inherited by its children.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class TargetAssignmentGroup extends AbstractTarget implements
-		ITargetAssignmentGroup
+        ITargetAssignmentGroup
 {
-	/**
-	 * The name of the assignment group.
-	 */
-	private String name;
+	// === Methods ============================================================
 
-	/**
-	 * Indicates whether or not the assignment group should be hidden in the
-	 * user-interface.
-	 */
-	private boolean hidden;
-
-	/**
-	 * An adapter class that manages the INameableDefinition interface for
-	 * this assignment group.
-	 */
-	private class NameableDefinitionAdapter implements INameableTarget
-	{
-		private TargetAssignmentGroup asmt;
-
-		public NameableDefinitionAdapter(TargetAssignmentGroup asmt)
-		{
-			this.asmt = asmt;
-		}
-
-		public String getName()
-		{
-			return asmt.getName();
-		}
-		
-		public void setName(String value)
-		{
-			asmt.setName(value);
-		}
-	}
-
-	/**
-	 * An adapter class that manages the IHideableDefinition interface for
-	 * this assignment group.
-	 */
-	private class HideableDefinitionAdapter implements IHideableTarget
-	{
-		private TargetAssignmentGroup asmt;
-
-		public HideableDefinitionAdapter(TargetAssignmentGroup asmt)
-		{
-			this.asmt = asmt;
-		}
-
-		public boolean isHidden()
-		{
-			return asmt.isHidden();
-		}
-		
-		public void setHidden(boolean value)
-		{
-			asmt.setHidden(value);
-		}
-	}
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new assignment group node with the specified parent.
 	 * 
-	 * @param parent The node that will be assigned the parent of the new
-	 *               node.
+	 * @param parent
+	 *            The node that will be assigned the parent of the new node.
 	 */
 	public TargetAssignmentGroup(AbstractTarget parent)
 	{
 		super(parent);
 	}
 
+
+	// ------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapterClass)
 	{
-		if (adapterClass.equals(INameableTarget.class))
+		if(adapterClass.equals(INameableTarget.class))
 			return new NameableDefinitionAdapter(this);
-		else if (adapterClass.equals(IHideableTarget.class))
+		else if(adapterClass.equals(IHideableTarget.class))
 			return new HideableDefinitionAdapter(this);
 		else
 			return super.getAdapter(adapterClass);
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean isContainer()
 	{
 		return true;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean isActionable()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean isNested()
 	{
 		return (name != null);
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean isLoaded()
 	{
 		return true;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public String getName()
 	{
 		return name;
 	}
 
+
+	// ------------------------------------------------------------------------
 	public void setName(String value)
 	{
 		String oldValue = name;
 		name = value;
-		
+
 		tryFireTargetObjectChanged("name", oldValue, name);
 	}
 
+
+	// ------------------------------------------------------------------------
 	public boolean isHidden()
 	{
 		return hidden;
 	}
-	
+
+
+	// ------------------------------------------------------------------------
 	public void setHidden(boolean value)
 	{
 		boolean oldValue = hidden;
 		hidden = value;
-		
-		tryFireTargetObjectChanged(
-				"hidden", new Boolean(oldValue), new Boolean(hidden));
+
+		tryFireTargetObjectChanged("hidden", new Boolean(oldValue),
+		        new Boolean(hidden));
 	}
 
+
+	// ------------------------------------------------------------------------
 	public void parse(Node parentNode) throws SubmissionTargetException
 	{
 		Node nameNode = parentNode.getAttributes().getNamedItem("name");
@@ -172,53 +137,57 @@ public class TargetAssignmentGroup extends AbstractTarget implements
 
 		String hiddenString = null;
 
-		if (nameNode != null)
+		if(nameNode != null)
 			name = nameNode.getNodeValue();
-		if (hiddenNode != null)
+		if(hiddenNode != null)
 			hiddenString = hiddenNode.getNodeValue();
 
 		hidden = new Boolean(hiddenString).booleanValue();
 
 		Node node = parentNode.getFirstChild();
 
-		ArrayList includes = new ArrayList();
-		ArrayList excludes = new ArrayList();
-		ArrayList required = new ArrayList();
-		ArrayList children = new ArrayList();
+		ArrayList<String> includes = new ArrayList<String>();
+		ArrayList<String> excludes = new ArrayList<String>();
+		ArrayList<String> required = new ArrayList<String>();
+		ArrayList<ITarget> children = new ArrayList<ITarget>();
 
-		while (node != null)
+		while(node != null)
 		{
 			String nodeName = node.getLocalName();
 
-			if ("include".equals(nodeName))
+			if("filter-ambiguity".equals(nodeName))
+			{
+				parseFilterAmbiguity(node);
+			}
+			else if("include".equals(nodeName))
 			{
 				includes.add(parseFilePattern(node));
 			}
-			else if ("exclude".equals(nodeName))
+			else if("exclude".equals(nodeName))
 			{
 				excludes.add(parseFilePattern(node));
 			}
-			else if ("required".equals(nodeName))
+			else if("required".equals(nodeName))
 			{
 				required.add(parseFilePattern(node));
 			}
-			else if ("transport".equals(nodeName))
+			else if("transport".equals(nodeName))
 			{
 				parseTransport(node);
 			}
-			else if ("packager".equals(nodeName))
+			else if("packager".equals(nodeName))
 			{
 				parsePackager(node);
 			}
-			else if ("assignment-group".equals(nodeName))
+			else if("assignment-group".equals(nodeName))
 			{
 				children.add(parseAssignmentGroup(node));
 			}
-			else if ("import-group".equals(nodeName))
+			else if("import-group".equals(nodeName))
 			{
 				children.add(parseImportGroup(node));
 			}
-			else if ("assignment".equals(nodeName))
+			else if("assignment".equals(nodeName))
 			{
 				children.add(parseAssignment(node));
 			}
@@ -232,28 +201,37 @@ public class TargetAssignmentGroup extends AbstractTarget implements
 		setChildren(children);
 	}
 
+
+	// ------------------------------------------------------------------------
 	private ITarget parseAssignmentGroup(Node node)
-			throws SubmissionTargetException
+	        throws SubmissionTargetException
 	{
 		TargetAssignmentGroup group = new TargetAssignmentGroup(this);
 		group.parse(node);
 		return group;
 	}
 
-	private ITarget parseImportGroup(Node node) throws SubmissionTargetException
+
+	// ------------------------------------------------------------------------
+	private ITarget parseImportGroup(Node node)
+	        throws SubmissionTargetException
 	{
 		TargetImportGroup group = new TargetImportGroup(this);
 		group.parse(node);
 		return group;
 	}
 
+
+	// ------------------------------------------------------------------------
 	private ITarget parseAssignment(Node node) throws SubmissionTargetException
 	{
 		TargetAssignment assignment = new TargetAssignment(this);
 		assignment.parse(node);
 		return assignment;
 	}
-	
+
+
+	// ------------------------------------------------------------------------
 	public void writeToXML(PrintWriter writer, int indentLevel)
 	{
 		// Write opening tag.
@@ -269,7 +247,7 @@ public class TargetAssignmentGroup extends AbstractTarget implements
 
 		if(hidden)
 			writer.print(" hidden=\"true\"");
-		
+
 		writer.println(">");
 
 		writeSharedProperties(indentLevel + 1, writer);
@@ -280,4 +258,75 @@ public class TargetAssignmentGroup extends AbstractTarget implements
 		padToIndent(indentLevel, writer);
 		writer.println("</assignment-group>");
 	}
+
+
+	// === Nested Classes =====================================================
+
+	/**
+	 * An adapter class that manages the INameableDefinition interface for this
+	 * assignment group.
+	 */
+	private class NameableDefinitionAdapter implements INameableTarget
+	{
+		private TargetAssignmentGroup asmt;
+
+
+		public NameableDefinitionAdapter(TargetAssignmentGroup asmt)
+		{
+			this.asmt = asmt;
+		}
+
+
+		public String getName()
+		{
+			return asmt.getName();
+		}
+
+
+		public void setName(String value)
+		{
+			asmt.setName(value);
+		}
+	}
+
+	/**
+	 * An adapter class that manages the IHideableDefinition interface for this
+	 * assignment group.
+	 */
+	private class HideableDefinitionAdapter implements IHideableTarget
+	{
+		private TargetAssignmentGroup asmt;
+
+
+		public HideableDefinitionAdapter(TargetAssignmentGroup asmt)
+		{
+			this.asmt = asmt;
+		}
+
+
+		public boolean isHidden()
+		{
+			return asmt.isHidden();
+		}
+
+
+		public void setHidden(boolean value)
+		{
+			asmt.setHidden(value);
+		}
+	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The name of the assignment group.
+	 */
+	private String name;
+
+	/**
+	 * Indicates whether or not the assignment group should be hidden in the
+	 * user-interface.
+	 */
+	private boolean hidden;
 }

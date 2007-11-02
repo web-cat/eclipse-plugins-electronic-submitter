@@ -16,6 +16,39 @@
 		</complexType>
 	</element>
 <!--
+	<filter-ambiguity>
+	===
+	Specifies which filter (include or exclude) should be preferred if a
+	file in the project being packaged satisfies both an inclusion and an
+	exclusion filter at the same level of the tree, or if there is no match
+	for a file when the root of the tree is reached. If this tag is omitted,
+	the default behavior depends on whether the ambiguity is at the root or
+	not:
+	
+	* If a file matches both an <include> and an <exclude> tag at a non-root
+	  node, exclusion takes preference over inclusion in the absence of the
+	  <filter-ambiguity> tag. If a file matches neither an <include> nor an
+	  <exclude> tag at a non-root node, then control passes to the parent
+	  node to determine the inclusion/exclusion of the file.
+
+	* If a file matches both an <include> and an <exclude> tag at the root
+	  node, exclusion takes preference over inclusion in the absence of the
+	  <filter-ambiguity> tag. If a file matches neither an <include> nor an
+	  <exclude> tag at the root node, then the file is included, UNLESS there
+	  are ANY <include> tags at the root; in this case, the file is excluded.
+	  
+	  This means that essentially, by default everything is included at the
+	  root, unless the user specifies explicit inclusions, in which case
+	  everything but those patterns is excluded. These root settings can be
+	  overridden by specifying inclusions and exclusions at lower levels in
+	  the tree.
+-->	
+	<element name="filter-ambiguity">
+		<complexType>
+			<attributeGroup ref="st:filterAmbiguityElement" />
+		</complexType>
+	</element>
+<!--
 	<include>, <exclude>, <required>
 	===
 	Specify file patterns for particular types of files.  They all share a
@@ -91,7 +124,7 @@
 	===
 	An <assignment-group> can contain other assignment groups and assignments.
 	The user-interface should display these as a "folder" or other container
-	in a hiearchical structure.
+	in a hierarchical structure.
 	
 	An assignment group has an optional name, a "hidden" attribute for
 	user-interface purposes, and it can contain <include>, <exclude>,
@@ -140,6 +173,7 @@
 	<element name="assignment">
 		<complexType>
 			<sequence>
+				<element ref="st:filter-ambiguity" minOccurs="0" maxOccurs="1" />
 				<choice minOccurs="0" maxOccurs="unbounded">
 					<element ref="st:include" minOccurs="0" />
 					<element ref="st:exclude" minOccurs="0" />
@@ -152,6 +186,22 @@
 			<attribute name="hidden" use="optional" default="false"/>
 		</complexType>
 	</element>
+<!--
+	Attribute group: filterAmbiguityElement
+	Used by: <filter-ambiguity>
+	===
+	Contains a single required "choice" attribute that is one of the following
+	two values: "include" or "exclude".
+-->
+	<attributeGroup name="filterAmbiguityElement">
+		<attribute name="choice" type="st:filterAmbiguityChoice" use="required" />
+	</attributeGroup>
+	<simpleType name="filterAmbiguityChoice">
+		<restriction base="string">
+			<enumeration value="include" />
+			<enumeration value="exclude" />
+		</restriction>
+	</simpleType>
 <!--
 	Attribute group: fileElement
 	Used by: <include>, <exclude>, <required>
@@ -171,6 +221,7 @@
 -->
 	<group name="assignmentContainer">
 		<sequence>
+			<element ref="st:filter-ambiguity" minOccurs="0" maxOccurs="1" />
 			<choice minOccurs="0" maxOccurs="unbounded">
 				<element ref="st:include" minOccurs="0" />
 				<element ref="st:exclude" minOccurs="0" />

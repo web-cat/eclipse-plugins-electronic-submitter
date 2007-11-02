@@ -30,16 +30,13 @@ import org.eclipse.core.runtime.Platform;
 /**
  * Maintains the list of all available protocol extensions loaded into Eclipse.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class ProtocolRegistry implements IProtocolRegistry
 {
-	/**
-	 * The protocols extension point id.
-	 */
-	private static final String protocolsId =
-		SubmitterCore.PLUGIN_ID + ".protocols";
+	// === Methods ============================================================
 
+	// ------------------------------------------------------------------------
 	public IProtocol getProtocol(String scheme)
 	{
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -74,6 +71,7 @@ public class ProtocolRegistry implements IProtocolRegistry
 		return null;
 	}
 
+	// ------------------------------------------------------------------------
 	public String[] getProtocolNames()
 	{
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -93,4 +91,13 @@ public class ProtocolRegistry implements IProtocolRegistry
 
 		return names;
 	}
+
+
+	// === Static Variables ===================================================
+
+	/**
+	 * The protocols extension point id.
+	 */
+	private static final String protocolsId =
+		SubmitterCore.PLUGIN_ID + ".protocols";
 }

@@ -23,10 +23,11 @@ package net.sf.webcat.eclipse.submitter.core;
  * 
  * This interface is not intended to be implemented by clients.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface IProtocolRegistry
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the specified protocol, or null if there is no such protocol
 	 * currently registered.
@@ -37,12 +38,14 @@ public interface IProtocolRegistry
 	 */
 	IProtocol getProtocol(String scheme);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns an array containing all of the currently loaded protocol
 	 * extensions.
 	 * 
-	 * @return An array of Strings, each element of which is the URI scheme of
-	 *         a currently loaded protocol extension. 
+	 * @return An array of Strings, each element of which is the URI scheme of a
+	 *         currently loaded protocol extension.
 	 */
 	String[] getProtocolNames();
 }

@@ -29,50 +29,50 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 /**
- * The content provider for the tree that displays the submission targets in
- * the wizard.
+ * The content provider for the tree that displays the submission targets in the
+ * wizard.
  * 
- * @author Tony Allowatt
+ * @author Tony Allevato
  */
 public class SubmissionTargetsContentProvider implements ITreeContentProvider
 {
-	/**
-	 * The root of the submission target tree.
-	 */
-	private ITarget root;
+	// === Methods ============================================================
 
-	/**
-	 * The context on which to execute submission target tree operations.
-	 */
-	private IRunnableContext context;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the content provider.
 	 * 
-	 * @param context The context on which to execute operations.
+	 * @param context
+	 *            The context on which to execute operations.
 	 */
 	public SubmissionTargetsContentProvider(IRunnableContext context)
 	{
 		this.context = context;
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 	 */
 	public Object[] getChildren(Object parentElement)
 	{
 		ITarget obj = (ITarget)parentElement;
 
-		ArrayList children = new ArrayList();
+		ArrayList<ITarget> children = new ArrayList<ITarget>();
 		computeChildren(obj, children);
 		return children.toArray();
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Computes the visible children of the specified node, displaying a
-	 * message to the user if any errors occur.
+	 * Computes the visible children of the specified node, displaying a message
+	 * to the user if any errors occur.
 	 */
-	private void computeChildren(ITarget obj, ArrayList list)
+	private void computeChildren(ITarget obj, ArrayList<ITarget> list)
 	{
 		try
 		{
@@ -80,11 +80,12 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 			for(int i = 0; i < children.length; i++)
 			{
 				ITarget child = children[i];
-	
-				IHideableTarget hideable = (IHideableTarget)
-					child.getAdapter(IHideableTarget.class);
-	
-				if(hideable == null || (hideable != null && !hideable.isHidden()))
+
+				IHideableTarget hideable = (IHideableTarget)child
+				        .getAdapter(IHideableTarget.class);
+
+				if(hideable == null
+				        || (hideable != null && !hideable.isHidden()))
 				{
 					if(child.isContainer() && !child.isNested())
 						computeChildren(child, list);
@@ -95,14 +96,19 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 		}
 		catch(Throwable e)
 		{
-			SubmissionParserErrorDialog dlg = new SubmissionParserErrorDialog(null, e);
+			SubmissionParserErrorDialog dlg = new SubmissionParserErrorDialog(
+			        null, e);
 			dlg.open();
-			
+
 			list.clear();
 		}
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
 	 */
 	public Object getParent(Object element)
@@ -110,7 +116,11 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 		return ((ITarget)element).parent();
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
 	 */
 	public boolean hasChildren(Object element)
@@ -118,18 +128,22 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 		if(element instanceof ITargetImportGroup)
 		{
 			// If it's an imported group, it might have children.
-			// Chances are it does.  We want expand logic here.
+			// Chances are it does. We want expand logic here.
 			return true;
 		}
 		else
 		{
-			ArrayList children = new ArrayList();
+			ArrayList<ITarget> children = new ArrayList<ITarget>();
 			computeChildren((ITarget)element, children);
 			return children.size() > 0;
 		}
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 	 */
 	public Object[] getElements(Object inputElement)
@@ -137,18 +151,40 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 		return getChildren(root);
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.IContentProvider#dispose()
 	 */
 	public void dispose()
 	{
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
+	 *      java.lang.Object, java.lang.Object)
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
 	{
 		root = (ITarget)newInput;
 	}
+
+	
+	// === Instance Variables =================================================
+
+	/**
+	 * The root of the submission target tree.
+	 */
+	private ITarget root;
+
+	/**
+	 * The context on which to execute submission target tree operations.
+	 */
+	private IRunnableContext context;
 }

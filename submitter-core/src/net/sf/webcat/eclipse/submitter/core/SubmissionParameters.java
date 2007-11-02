@@ -25,32 +25,14 @@ import org.eclipse.core.resources.IProject;
  * This class collects references to a number of objects that are required in
  * various places during the submission process, so that they can be easily
  * passed between functions.
- *  
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * 
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmissionParameters
 {
-	/**
-	 * The assignment to which the user is submitting.
-	 */
-	private ITarget assignment;
-	
-	/**
-	 * The Eclipse project that should be packaged and submitted.
-	 */
-	private IProject project;
-	
-	/**
-	 * The ID of the user.
-	 */
-	private String username;
-	
-	/**
-	 * The password used to log into the submission target system, if
-	 * required. 
-	 */
-	private String password;
+	// === Methods ============================================================
 
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the assignment referred to by this object.
 	 * 
@@ -61,16 +43,21 @@ public class SubmissionParameters
 		return assignment;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the assignment referred to by this object.
 	 * 
-	 * @param value An IDefinitionObject representing the assignment.
+	 * @param value
+	 *            An IDefinitionObject representing the assignment.
 	 */
 	public void setAssignment(ITarget value)
 	{
 		assignment = value;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the project referred to by this object.
 	 * 
@@ -81,16 +68,21 @@ public class SubmissionParameters
 		return project;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the project referred to by this object.
 	 * 
-	 * @param value An IProject representing the Eclipse project.
+	 * @param value
+	 *            An IProject representing the Eclipse project.
 	 */
 	public void setProject(IProject value)
 	{
 		project = value;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the username referred to by this object.
 	 * 
@@ -101,16 +93,21 @@ public class SubmissionParameters
 		return username;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the username referred to by this object.
 	 * 
-	 * @param value A String containing the username.
+	 * @param value
+	 *            A String containing the username.
 	 */
 	public void setUsername(String value)
 	{
 		username = value;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the password referred to by this object.
 	 * 
@@ -121,19 +118,24 @@ public class SubmissionParameters
 		return password;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the password referred to by this object.
 	 * 
-	 * @param value A String containing the password.
+	 * @param value
+	 *            A String containing the password.
 	 */
 	public void setPassword(String value)
 	{
 		password = value;
 	}
-	
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Resolves the specified parameter string by replacing any variable
-	 * placeholders with their actual values.  Currently the following
+	 * placeholders with their actual values. Currently the following
 	 * placeholders are supported:
 	 * <ul>
 	 * <li>${user} - the username</li>
@@ -141,10 +143,11 @@ public class SubmissionParameters
 	 * <li>${assignment.name} - the name of the assignment</li>
 	 * </ul>
 	 * 
-	 * @param value The String containing placeholders to be resolved.
+	 * @param value
+	 *            The String containing placeholders to be resolved.
 	 * 
-	 * @return A copy of the original string with the placeholders replaced
-	 *         by their actual values.
+	 * @return A copy of the original string with the placeholders replaced by
+	 *         their actual values.
 	 */
 	public String resolveParameter(String value)
 	{
@@ -156,17 +159,39 @@ public class SubmissionParameters
 		pattern = Pattern.compile("\\$\\{pw\\}");
 		value = pattern.matcher(value).replaceAll(password);
 
-		INameableTarget nameable = (INameableTarget)
-			assignment.getAdapter(INameableTarget.class);
-		
+		INameableTarget nameable = (INameableTarget)assignment
+		        .getAdapter(INameableTarget.class);
+
 		if(nameable != null)
 		{
 			pattern = Pattern.compile("\\$\\{assignment\\.name\\}");
-			String asmtName = nameable.getName().replaceAll(" ",
-				"%20");
+			String asmtName = nameable.getName().replaceAll(" ", "%20");
 			value = pattern.matcher(value).replaceAll(asmtName);
 		}
 
 		return value;
 	}
+
+	
+	// === Instance variables =================================================
+
+	/**
+	 * The assignment to which the user is submitting.
+	 */
+	private ITarget assignment;
+
+	/**
+	 * The Eclipse project that should be packaged and submitted.
+	 */
+	private IProject project;
+
+	/**
+	 * The ID of the user.
+	 */
+	private String username;
+
+	/**
+	 * The password used to log into the submission target system, if required.
+	 */
+	private String password;
 }

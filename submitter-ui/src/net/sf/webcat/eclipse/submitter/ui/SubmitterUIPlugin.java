@@ -25,6 +25,7 @@ import java.util.ResourceBundle;
 import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
 import net.sf.webcat.eclipse.submitter.core.SubmitterCore;
 import net.sf.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
+import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 import net.sf.webcat.eclipse.submitter.ui.wizards.SubmitterWizard;
 
 import org.eclipse.core.resources.IProject;
@@ -40,25 +41,13 @@ import org.osgi.framework.BundleContext;
 /**
  * The main plugin class to be used in the desktop.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmitterUIPlugin extends AbstractUIPlugin
 {
-	/**
-	 * The unique identifier of the plug-in.
-	 */
-	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter.ui";
+	// === Methods ============================================================
 
-	/**
-	 * The shared instance of the plug-in.
-	 */
-	private static SubmitterUIPlugin plugin;
-
-	/**
-	 * The resource bundle of the plug-in.
-	 */
-	private ResourceBundle resourceBundle;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * The constructor.
 	 */
@@ -69,7 +58,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		try
 		{
 			resourceBundle = ResourceBundle
-					.getBundle("net.sf.webcat.eclipse.submitter.ui.SubmitterUIPluginResources");
+			        .getBundle("net.sf.webcat.eclipse.submitter.ui.SubmitterUIPluginResources"); //$NON-NLS-1$
 		}
 		catch(MissingResourceException x)
 		{
@@ -77,6 +66,8 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * This method is called upon plug-in activation
 	 */
@@ -85,6 +76,8 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		super.start(context);
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
@@ -93,6 +86,8 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		super.stop(context);
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the shared instance.
 	 */
@@ -101,6 +96,8 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		return plugin;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
@@ -108,7 +105,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	public static String getResourceString(String key)
 	{
 		ResourceBundle bundle = SubmitterUIPlugin.getDefault()
-				.getResourceBundle();
+		        .getResourceBundle();
 		try
 		{
 			return (bundle != null) ? bundle.getString(key) : key;
@@ -119,6 +116,8 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		}
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
@@ -127,47 +126,42 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		return resourceBundle;
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Initializes the submission engine and invokes the submission wizard.
 	 * 
 	 * @param shell
-	 *          The shell that will be the parent to the wizard.
+	 *            The shell that will be the parent to the wizard.
 	 * @param project
-	 *          The project to be submitted.
+	 *            The project to be submitted.
 	 */
 	public void spawnSubmissionUI(Shell shell, IProject project)
 	{
 		URL url;
 		ISubmissionEngine engine = SubmitterCore.getDefault()
-				.createSubmissionEngine();
+		        .createSubmissionEngine();
 
 		try
 		{
 			url = new URL(SubmitterCore.getDefault().getOption(
-					SubmitterCore.DEFINITIONS_URL));
+			        SubmitterCore.DEFINITIONS_URL));
 
 			ProgressMonitorDialog dlg = new ProgressMonitorDialog(shell);
 
-			
+
 			engine.openDefinitions(url, dlg);
 		}
 		catch(MalformedURLException e)
 		{
-			MessageDialog
-					.openWarning(
-							null,
-							"No Assignment Definition URL Specified",
-							"There is no assignment definition URL specified in the "
-									+ "Eclipse preferences, or the URL is malformed.\n\n"
-									+ "Please open the Preferences window (Window menu/Preferences...) "
-									+ "and enter the URL provided by your instructor in the "
-									+ "\"Electronic Submission\" panel.");
+			MessageDialog.openWarning(null, Messages.PLUGINUI_NO_DEF_URL_TITLE,
+			        Messages.PLUGINUI_NO_DEF_URL_DESCRIPTION);
 			return;
 		}
 		catch(Throwable e)
 		{
 			SubmissionParserErrorDialog dlg = new SubmissionParserErrorDialog(
-					shell, e);
+			        shell, e);
 			dlg.open();
 
 			return;
@@ -180,20 +174,53 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		WizardDialog dialog = new WizardDialog(shell, wizard);
 		dialog.open();
 	}
-	
+
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Returns an image descriptor for the specified image in the plug-in's
+	 * "icons" directory.
+	 * 
+	 * @param path
+	 *            the path to the icon that should be loaded, relative to the
+	 *            "icons" folder in the plug-in
+	 * 
+	 * @return an ImageDescriptor for the image
+	 */
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
 		try
 		{
-			URL base = Platform.getBundle(PLUGIN_ID).getEntry("/icons/");
+			URL base = Platform.getBundle(PLUGIN_ID).getEntry("/icons/"); //$NON-NLS-1$
 			URL url = new URL(base, path);
-			
+
 			return ImageDescriptor.createFromURL(url);
 		}
-		catch (MalformedURLException e)
+		catch(MalformedURLException e)
 		{
 		}
 
 		return null;
 	}
+
+
+	// === Static Variables ===================================================
+
+	/**
+	 * The unique identifier of the plug-in.
+	 */
+	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter.ui"; //$NON-NLS-1$
+
+	/**
+	 * The shared instance of the plug-in.
+	 */
+	private static SubmitterUIPlugin plugin;
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The resource bundle of the plug-in.
+	 */
+	private ResourceBundle resourceBundle;
 }

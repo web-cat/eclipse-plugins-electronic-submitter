@@ -27,30 +27,29 @@ import org.eclipse.swt.graphics.Image;
 /**
  * The label provider for the submission target tree in the wizard.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class SubmissionTargetsLabelProvider extends LabelProvider
 {
-	/**
-	 * The image used for assignment groups and imported groups.
-	 */
-	private Image folderImage;
-
-	/**
-	 * The image used for assignment targets.
-	 */
-	private Image fileImage;
-
+	// === Methods ============================================================
+	
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the label provider.
 	 */
 	public SubmissionTargetsLabelProvider()
 	{
-		folderImage = SubmitterUIPlugin.getImageDescriptor("folder.gif").createImage();
-		fileImage = SubmitterUIPlugin.getImageDescriptor("file.gif").createImage();
+		folderImage = SubmitterUIPlugin
+		        .getImageDescriptor("folder.gif").createImage(); //$NON-NLS-1$
+		fileImage = SubmitterUIPlugin
+		        .getImageDescriptor("file.gif").createImage(); //$NON-NLS-1$
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
 	 */
 	public void dispose()
@@ -61,7 +60,11 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 		super.dispose();
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 	 */
 	public Image getImage(Object element)
@@ -73,19 +76,36 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 			return fileImage;
 	}
 
-	/* (non-Javadoc)
+
+	// ------------------------------------------------------------------------
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	public String getText(Object element)
 	{
 		ITarget object = (ITarget)element;
-		
+
 		INameableTarget nameable = (INameableTarget)object
-			.getAdapter(INameableTarget.class);
+		        .getAdapter(INameableTarget.class);
 
 		if(nameable != null && nameable.getName() != null)
 			return nameable.getName();
 		else
 			return super.getText(element);
 	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The image used for assignment groups and imported groups.
+	 */
+	private Image folderImage;
+
+	/**
+	 * The image used for assignment targets.
+	 */
+	private Image fileImage;
 }

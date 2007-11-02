@@ -17,32 +17,52 @@
  */
 package net.sf.webcat.eclipse.submitter.core;
 
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jface.operation.IRunnableContext;
-
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.operation.IRunnableContext;
 import org.w3c.dom.Node;
 
 /**
- * The interface for all definition objects in the system. The definition root
- * and all assignment groups and assignments implement this common interface.
- * It provides methods for traversing the definition tree as well as for
+ * The interface for all submission target in the system. The root and all
+ * assignment groups and assignments implement this common interface. It
+ * provides methods for traversing the submission target tree as well as for
  * accessing inherited properties, such as included and excluded files.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITarget extends IAdaptable
 {
+	// === Constants ==========================================================
+
+	/**
+	 * Specifies that a file should be included in the event that it satisfies
+	 * an &lt;include&gt; and &lt;exclude&gt; directive at the same level of the
+	 * tree.
+	 */
+	static final int AMBIGUITY_INCLUDE = 1;
+
+	/**
+	 * Specifies that a file should be excluded in the event that it satisfies
+	 * an &lt;include&gt; and &lt;exclude&gt; directive at the same level of the
+	 * tree.
+	 */
+	static final int AMBIGUITY_EXCLUDE = 2;
+
+
+	// === Methods ============================================================
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the parent node to this node in the tree.
 	 * 
-	 * @return A SubmissionObject that represent this node's parent.
+	 * @return An ITarget that represent this node's parent.
 	 */
 	ITarget parent();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the root of the tree that this object is contained in.
 	 * 
@@ -50,265 +70,375 @@ public interface ITarget extends IAdaptable
 	 */
 	ITargetRoot getRoot();
 
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Gets a value indicating whether file filter ambiguities are resolved by
+	 * including the file or excluding it.
+	 * 
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
+	 * 
+	 * @return One of the AMBIGUITY_* constants defined in ITarget.
+	 * 
+	 * @throws SubmissionTargetException
+	 *             if an error occurs while delay-loading the node.
+	 */
+	int getAmbiguityResolution(IRunnableContext context)
+	        throws SubmissionTargetException;
+
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Sets the policy by which file filter ambiguities are resolved.
+	 * 
+	 * @param value
+	 *            One of the AMBIGUITY_* constants defined in ITarget,
+	 *            specifying whether the file should be included or excluded.
+	 */
+	void setAmbiguityResolution(int value);
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets all of the included file patterns for this node.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return An array of Strings that represent the file patterns.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String[] getIncludes(IRunnableContext context) throws SubmissionTargetException;
+	String[] getIncludes(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the included file patterns for this node.
 	 * 
-	 * @param array An array of Strings that represent the file patterns.
+	 * @param array
+	 *            An array of Strings that represent the file patterns.
 	 */
 	void setIncludes(String[] array);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets all of the excluded file patterns for this node.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return An array of Strings that represent the file patterns.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String[] getExcludes(IRunnableContext context) throws SubmissionTargetException;
-	
+	String[] getExcludes(IRunnableContext context)
+	        throws SubmissionTargetException;
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the excluded file patterns for this node.
 	 * 
-	 * @param array An array of Strings that represent the file patterns.
+	 * @param array
+	 *            An array of Strings that represent the file patterns.
 	 */
 	void setExcludes(String[] array);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets all of the required file patterns for this node.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return An array of Strings that represent the file patterns.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String[] getRequired(IRunnableContext context) throws SubmissionTargetException;
-	
+	String[] getRequired(IRunnableContext context)
+	        throws SubmissionTargetException;
+
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the required file patterns for this node.
 	 * 
-	 * @param array An array of Strings that represent the file patterns.
+	 * @param array
+	 *            An array of Strings that represent the file patterns.
 	 */
 	void setRequired(String[] array);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Recursively walks up the tree from the current node and collects a list
 	 * of all the required file patterns for a submission at this level.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return An array of Strings representing all the required files.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String[] getAllRequired(IRunnableContext context) throws SubmissionTargetException;
+	String[] getAllRequired(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the transport URI for submission targets at this level in the
-	 * tree.  This function walks up the tree to find an inherited transport,
-	 * if necessary.
+	 * tree. This function walks up the tree to find an inherited transport, if
+	 * necessary.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A String containing the transport URI.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String getTransport(IRunnableContext context) throws SubmissionTargetException;
+	String getTransport(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Returns the transport URI for submission targets at this level in the
-	 * tree.  This function does not walk up the tree to find an inherited
+	 * tree. This function does not walk up the tree to find an inherited
 	 * transport--it returns the transport specified for this node only.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A String containing the transport URI.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String getLocalTransport(IRunnableContext context) throws SubmissionTargetException;
+	String getLocalTransport(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the transport URI for this node.
 	 * 
-	 * @param uri A String containing the transport URI.
+	 * @param uri
+	 *            A String containing the transport URI.
 	 */
 	void setTransport(String uri);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets a map containing the transport parameter name/value pairs for this
-	 * node.  This function walks up the tree to find an inherited transport,
-	 * if necessary.
+	 * node. This function walks up the tree to find an inherited transport, if
+	 * necessary.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A Map containing the parameter names and values.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	Map getTransportParams(IRunnableContext context) throws SubmissionTargetException;
+	Map<String, String> getTransportParams(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets a map containing the transport parameter name/value pairs for this
-	 * node.  This function does not walk up the tree to find an inherited
+	 * node. This function does not walk up the tree to find an inherited
 	 * transport--it returns the transport specified for this node only.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A Map containing the parameter names and values.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	Map getLocalTransportParams(IRunnableContext context) throws SubmissionTargetException;
+	Map<String, String> getLocalTransportParams(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the transport parameter name/value pairs for this node.
 	 * 
-	 * @param params A Map containing the parameter names and values.
+	 * @param params
+	 *            A Map containing the parameter names and values.
 	 */
-	void setTransportParams(Map params);
+	void setTransportParams(Map<String, String> params);
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Returns the class name of the packager used to submit the project.
-	 * This function walks up the tree to find an inherited packager, if
-	 * necessary.
+	 * Returns the class name of the packager used to submit the project. This
+	 * function walks up the tree to find an inherited packager, if necessary.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A String containing the packager class name.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String getPackager(IRunnableContext context) throws SubmissionTargetException;
+	String getPackager(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Returns the class name of the packager used to submit the project.
-	 * This function does not walk up the tree to find an inherited
-	 * packager--it returns the packager specified for this node only.
+	 * Returns the class name of the packager used to submit the project. This
+	 * function does not walk up the tree to find an inherited packager--it
+	 * returns the packager specified for this node only.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A String containing the packager class name.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	String getLocalPackager(IRunnableContext context) throws SubmissionTargetException;
+	String getLocalPackager(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the packager identifier for this node.
 	 * 
-	 * @param id A String containing the unique identifier of a packager.
+	 * @param id
+	 *            A String containing the unique identifier of a packager.
 	 */
 	void setPackager(String id);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets a map containing the packager parameter name/value pairs for this
 	 * node.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A Map containing the packager parameter names and values.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	Map getPackagerParams(IRunnableContext context) throws SubmissionTargetException;
+	Map<String, String> getPackagerParams(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets a map containing the packager parameter name/value pairs for this
-	 * node.  This function does not walk up the tree to find an inherited
+	 * node. This function does not walk up the tree to find an inherited
 	 * packager--it returns the transport specified for this node only.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
 	 * @return A Map containing the parameter names and values.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	Map getLocalPackagerParams(IRunnableContext context) throws SubmissionTargetException;
+	Map<String, String> getLocalPackagerParams(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the packager parameter name/value pairs for this node.
 	 * 
-	 * @param params A Map containing the parameter names and values.
+	 * @param params
+	 *            A Map containing the parameter names and values.
 	 */
-	void setPackagerParams(Map params);
+	void setPackagerParams(Map<String, String> params);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the children of this node.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
-	 * @return An array of IDefinitionObjects that represent the children of
-	 *         the node.
+	 * @return An array of ITarget that represent the children of the node.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	ITarget[] getChildren(IRunnableContext context) throws SubmissionTargetException;
+	ITarget[] getChildren(IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets the children of this node.
 	 * 
-	 * @param array An array of IDefinitionObjects that represent the new
-	 *              children of the node.
+	 * @param array
+	 *            An array of ITarget that represent the new children of the
+	 *            node.
 	 */
 	void setChildren(ITarget[] array);
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Recursively walks up the submission target tree to determine if the
 	 * specified file should be excluded from the submission.
 	 * 
-	 * @param context The context in which to run the operation, if
-	 *          delay-loading is required.
+	 * @param context
+	 *            The context in which to run the operation, if delay-loading is
+	 *            required.
 	 * 
-	 * @param file The File to check for exclusion.
+	 * @param projectRelativePath
+	 *            The project relative path to check for exclusion.
 	 * 
 	 * @return true if the file should be excluded; otherwise, false.
 	 * 
 	 * @throws SubmissionTargetException
-	 *         if an error occurs while delay-loading the node.
+	 *             if an error occurs while delay-loading the node.
 	 */
-	boolean isFileExcluded(File file, IRunnableContext context) throws SubmissionTargetException;
+	boolean isFileExcluded(String projectRelativePath, IRunnableContext context)
+	        throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Overridden by derived classes to specify whether the node may contain
 	 * children.
@@ -317,6 +447,8 @@ public interface ITarget extends IAdaptable
 	 */
 	boolean isContainer();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Overridden by derived classes to specify whether the node should be
 	 * displayed at the same level as its parent, or if it should be nested at a
@@ -327,6 +459,8 @@ public interface ITarget extends IAdaptable
 	 */
 	boolean isNested();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Overridden by derived classes to specify whether an action can be taken
 	 * on this node. In a wizard, for example, this would enable the Next/Finish
@@ -336,18 +470,21 @@ public interface ITarget extends IAdaptable
 	 */
 	boolean isActionable();
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Overridden by derived classes to specify whether the node has been
-	 * loaded into local memory.  This is always true for most nodes except
-	 * imported groups, which return true only if the external XML file
-	 * has already been processed.
+	 * Overridden by derived classes to specify whether the node has been loaded
+	 * into local memory. This is always true for most nodes except imported
+	 * groups, which return true only if the external XML file has already been
+	 * processed.
 	 * 
-	 * @return true if the node is local or if it has been delay-loaded;
-	 *         false if the node is an imported group that has not let been
-	 *         expanded.
+	 * @return true if the node is local or if it has been delay-loaded; false
+	 *         if the node is an imported group that has not let been expanded.
 	 */
 	boolean isLoaded();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Parses the specified XML node and builds a subtree from the data.
 	 * 
@@ -358,11 +495,13 @@ public interface ITarget extends IAdaptable
 	 */
 	void parse(Node node) throws SubmissionTargetException;
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Generates the XML code for this element and its children.
-	 *
+	 * 
 	 * @param writer
-	 *            The writer that will store the XML code.  
+	 *            The writer that will store the XML code.
 	 * @param indentLevel
 	 *            An integer specifying the indentation level of the element.
 	 */

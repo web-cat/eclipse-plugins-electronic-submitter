@@ -18,14 +18,15 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * The interface that represents an assignment in the submission target tree.
- * An assignment is an entity to which a project can be submitted.  It must
- * have a name, but it does not contain other elements.
- *  
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * The interface that represents an assignment in the submission target tree. An
+ * assignment is an entity to which a project can be submitted. It must have a
+ * name, but it does not contain other elements.
+ * 
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITargetAssignment extends ITarget
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Gets the name of the assignment.
 	 * 
@@ -33,26 +34,34 @@ public interface ITargetAssignment extends ITarget
 	 */
 	public String getName();
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Sets the name assignmed to the definition object.
+	 * Sets the name assignmed to the assignment.
 	 * 
-	 * @param value A String containing the name of the object, or null if no
-	 *              name should be assigned.
+	 * @param value
+	 *            A String containing the name of the assignment, or null if no
+	 *            name should be assigned.
 	 */
 	void setName(String value);
 
+
+	// ------------------------------------------------------------------------
 	/**
-	 * Gets a value indicating whether the assignment should be hidden in
-	 * the user-interface.
+	 * Gets a value indicating whether the assignment should be hidden in the
+	 * user-interface.
 	 * 
 	 * @return true if the assignment should be hidden; otherwise, false.
 	 */
 	public boolean isHidden();
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Sets a value indicating whether or not the object should be hidden.
 	 * 
-	 * @param value true if the object should be hidden; otherwise, false.
+	 * @param value
+	 *            true if the assignment should be hidden; otherwise, false.
 	 */
 	void setHidden(boolean value);
 }

@@ -31,70 +31,14 @@ import org.w3c.dom.Node;
  * Represents a single assignment in the submission definition tree. An
  * assignment is an actionable object to which projects can be submitted.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class TargetAssignment extends AbstractTarget
 	implements ITargetAssignment
 {
-	/**
-	 * The name of the assignment.
-	 */
-	private String name;
+	// === Methods ============================================================
 
-	/**
-	 * Indicates whether or not the assignment should be hidden in the
-	 * user-interface.
-	 */
-	private boolean hidden;
-
-	/**
-	 * An adapter class that manages the INameableDefinition interface for
-	 * this assignment.
-	 */
-	private class NameableDefinitionAdapter implements INameableTarget
-	{
-		private TargetAssignment asmt;
-
-		public NameableDefinitionAdapter(TargetAssignment asmt)
-		{
-			this.asmt = asmt;
-		}
-
-		public String getName()
-		{
-			return asmt.getName();
-		}
-		
-		public void setName(String value)
-		{
-			asmt.setName(value);
-		}
-	}
-
-	/**
-	 * An adapter class that manages the IHideableDefinition interface for
-	 * this assignment.
-	 */
-	private class HideableDefinitionAdapter implements IHideableTarget
-	{
-		private TargetAssignment asmt;
-
-		public HideableDefinitionAdapter(TargetAssignment asmt)
-		{
-			this.asmt = asmt;
-		}
-
-		public boolean isHidden()
-		{
-			return asmt.isHidden();
-		}
-		
-		public void setHidden(boolean value)
-		{
-			asmt.setHidden(value);
-		}
-	}
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new assignment node with the specified parent.
 	 * 
@@ -106,6 +50,8 @@ public class TargetAssignment extends AbstractTarget
 		super(parent);
 	}
 
+	// ------------------------------------------------------------------------
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapterClass)
 	{
 		if(adapterClass.equals(INameableTarget.class))
@@ -116,31 +62,37 @@ public class TargetAssignment extends AbstractTarget
 			return super.getAdapter(adapterClass);
 	}
 
+	// ------------------------------------------------------------------------
 	public boolean isContainer()
 	{
 		return false;
 	}
 
+	// ------------------------------------------------------------------------
 	public boolean isActionable()
 	{
 		return true;
 	}
 
+	// ------------------------------------------------------------------------
 	public boolean isNested()
 	{
 		return true;
 	}
 	
+	// ------------------------------------------------------------------------
 	public boolean isLoaded()
 	{
 		return true;
 	}
 
+	// ------------------------------------------------------------------------
 	public String getName()
 	{
 		return name;
 	}
 	
+	// ------------------------------------------------------------------------
 	public void setName(String value)
 	{
 		String oldValue = name;
@@ -149,11 +101,13 @@ public class TargetAssignment extends AbstractTarget
 		tryFireTargetObjectChanged("name", oldValue, name);
 	}
 
+	// ------------------------------------------------------------------------
 	public boolean isHidden()
 	{
 		return hidden;
 	}
 	
+	// ------------------------------------------------------------------------
 	public void setHidden(boolean value)
 	{
 		boolean oldValue = hidden;
@@ -163,6 +117,7 @@ public class TargetAssignment extends AbstractTarget
 				"hidden", new Boolean(oldValue), new Boolean(hidden));
 	}
 
+	// ------------------------------------------------------------------------
 	public void parse(Node parentNode) throws SubmissionTargetException
 	{
 		Node nameNode = parentNode.getAttributes().getNamedItem("name");
@@ -179,15 +134,19 @@ public class TargetAssignment extends AbstractTarget
 
 		Node node = parentNode.getFirstChild();
 
-		ArrayList includes = new ArrayList();
-		ArrayList excludes = new ArrayList();
-		ArrayList required = new ArrayList();
+		ArrayList<String> includes = new ArrayList<String>();
+		ArrayList<String> excludes = new ArrayList<String>();
+		ArrayList<String> required = new ArrayList<String>();
 
 		while(node != null)
 		{
 			String nodeName = node.getLocalName();
 
-			if("include".equals(nodeName))
+			if("filter-ambiguity".equals(nodeName))
+			{
+				parseFilterAmbiguity(node);
+			}
+			else if("include".equals(nodeName))
 			{
 				includes.add(parseFilePattern(node));
 			}
@@ -216,6 +175,7 @@ public class TargetAssignment extends AbstractTarget
 		setRequired(required);
 	}
 
+	// ------------------------------------------------------------------------
 	public void writeToXML(PrintWriter writer, int indentLevel)
 	{
 		// Write opening tag.
@@ -235,4 +195,69 @@ public class TargetAssignment extends AbstractTarget
 		padToIndent(indentLevel, writer);
 		writer.println("</assignment>");
 	}
+
+
+	// === Nested Classes =====================================================
+	
+	/**
+	 * An adapter class that manages the INameableDefinition interface for
+	 * this assignment.
+	 */
+	private static class NameableDefinitionAdapter implements INameableTarget
+	{
+		public NameableDefinitionAdapter(TargetAssignment asmt)
+		{
+			this.asmt = asmt;
+		}
+
+		public String getName()
+		{
+			return asmt.getName();
+		}
+		
+		public void setName(String value)
+		{
+			asmt.setName(value);
+		}
+
+		private TargetAssignment asmt;
+	}
+
+	/**
+	 * An adapter class that manages the IHideableDefinition interface for
+	 * this assignment.
+	 */
+	private static class HideableDefinitionAdapter implements IHideableTarget
+	{
+		public HideableDefinitionAdapter(TargetAssignment asmt)
+		{
+			this.asmt = asmt;
+		}
+
+		public boolean isHidden()
+		{
+			return asmt.isHidden();
+		}
+		
+		public void setHidden(boolean value)
+		{
+			asmt.setHidden(value);
+		}
+
+		private TargetAssignment asmt;
+	}
+
+
+	// === Instance Variables =================================================
+
+	/**
+	 * The name of the assignment.
+	 */
+	private String name;
+
+	/**
+	 * Indicates whether or not the assignment should be hidden in the
+	 * user-interface.
+	 */
+	private boolean hidden;
 }

@@ -18,15 +18,24 @@
 package net.sf.webcat.eclipse.submitter.core;
 
 /**
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * This interface can be implemented by clients in order to get notifications
+ * when a submission target's properties have changed due to a call to one of
+ * its set*() methods.
+ * 
+ * This interface is meant to be used as part of a visual editor for submission
+ * target files.
+ * 
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public interface ITargetChangedListener
 {
+	// ------------------------------------------------------------------------
 	/**
 	 * Called when there is a change in the target tree this listener is
 	 * registered with.
-	 *
-	 * @param event A change event that describes the kind of the target change
+	 * 
+	 * @param event
+	 *            A change event that describes the kind of the target change
 	 */
 	public void targetChanged(ITargetChangedEvent event);
 }

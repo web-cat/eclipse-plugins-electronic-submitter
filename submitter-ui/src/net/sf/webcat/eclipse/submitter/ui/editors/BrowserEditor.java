@@ -17,6 +17,10 @@
  */
 package net.sf.webcat.eclipse.submitter.ui.editors;
 
+import java.text.MessageFormat;
+
+import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -31,39 +35,34 @@ import org.eclipse.ui.part.EditorPart;
  * Implements an Eclipse editor that hosts the SWT Browser widget, so an HTML
  * page can be displayed in the workbench editor window.
  * 
- * @author Tony Allowatt (Virginia Tech Computer Science)
+ * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class BrowserEditor extends EditorPart
 {
-	public static final String ID =
-		"net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor";
+	// === Methods ============================================================
 
-	/**
-	 * The embedded browser widget.
-	 */
-	private Browser browser;
-
-	private BrowserEditorInput editorInput;
-
+	// ------------------------------------------------------------------------
 	/**
 	 * Called when the editor is initialized.
 	 */
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException
+	        throws PartInitException
 	{
-		if (!(input instanceof BrowserEditorInput))
+		if(!(input instanceof BrowserEditorInput))
 			throw new PartInitException(
-					"Invalid Input: Must be BrowserEditorInput");
+			        "Invalid Input: Must be BrowserEditorInput");
 
 		setSite(site);
 		setInput(input);
 
-		editorInput = (BrowserEditorInput) input;
+		editorInput = (BrowserEditorInput)input;
 
-		setPartName(
-				editorInput.getProject().getName() + " Submission Results");
+		setPartName(MessageFormat.format(Messages.BROWSEREDITOR_TITLE,
+		        editorInput.getProject().getName()));
 	}
 
+
+	// ------------------------------------------------------------------------
 	/**
 	 * Creates the embedded browser widget.
 	 */
@@ -73,31 +72,78 @@ public class BrowserEditor extends EditorPart
 		browser = new Browser(parent, SWT.NONE);
 
 		String html = editorInput.getHtml();
-		if (html != null)
+		if(html != null)
 			browser.setText(html);
 	}
 
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Saving is not implemented.
+	 */
 	public void doSave(IProgressMonitor monitor)
 	{
 	}
 
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Saving is not implemented.
+	 */
 	public void doSaveAs()
 	{
 	}
 
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Saving is not implemented, so the editor is never dirty.
+	 */
 	public boolean isDirty()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Saving is not implemented.
+	 */
 	public boolean isSaveAsAllowed()
 	{
 		return false;
 	}
 
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Sets the focus to the embedded browser control when the editor is
+	 * activated.
+	 */
 	public void setFocus()
 	{
-		if (browser != null)
+		if(browser != null)
 			browser.setFocus();
 	}
+
+
+	// === Static Variables ===================================================
+
+	/**
+	 * The extension identifier for this editor.
+	 */
+	public static final String ID = "net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor";
+
+	
+	// === Instance Variables =================================================
+
+	/**
+	 * The embedded browser widget.
+	 */
+	private Browser browser;
+
+	/**
+	 * The editor input used to initialize this editor.
+	 */
+	private BrowserEditorInput editorInput;
 }
