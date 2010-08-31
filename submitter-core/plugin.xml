@@ -5,9 +5,9 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="net.sf.webcat.eclipse.submitter.internal.core.preferences.SubmissionPreferencePage"
+            class="org.webcat.eclipse.submitter.internal.core.preferences.SubmissionPreferencePage"
             name="Electronic Submission"
-            id="net.sf.webcat.eclipse.submitter.preferences.submission"/>
+            id="org.webcat.eclipse.submitter.preferences.submission"/>
    </extension>
 
 </plugin>

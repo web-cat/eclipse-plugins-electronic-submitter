@@ -1,16 +1,16 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Web-CAT Electronic Submission Core
-Bundle-SymbolicName: net.sf.webcat.eclipse.submitter; singleton:=true
+Bundle-SymbolicName: org.webcat.eclipse.submitter; singleton:=true
 Bundle-Version: 1.4.0
 Bundle-ClassPath: submitcore.jar,
  lib/activation.jar,
  lib/mail.jar,
  lib/webcat-submitter-1.0.1.jar
-Bundle-Activator: net.sf.webcat.eclipse.submitter.core.SubmitterCore
+Bundle-Activator: org.webcat.eclipse.submitter.core.SubmitterCore
 Bundle-Vendor: Virginia Tech Computer Science
-Export-Package: net.sf.webcat.eclipse.submitter.core,
- net.sf.webcat.eclipse.submitter.internal.core.preferences;x-internal:=true,
+Export-Package: org.webcat.eclipse.submitter.core,
+ org.webcat.eclipse.submitter.internal.core.preferences;x-internal:=true,
  org.webcat.submitter,
  org.webcat.submitter.targets
 Require-Bundle: org.eclipse.core.runtime,

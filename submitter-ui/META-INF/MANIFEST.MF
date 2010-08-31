@@ -1,21 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Web-CAT Electronic Submission Wizard
-Bundle-SymbolicName: net.sf.webcat.eclipse.submitter.ui; singleton:=true
+Bundle-SymbolicName: org.webcat.eclipse.submitter.ui; singleton:=true
 Bundle-Version: 1.4.0
 Bundle-ClassPath: submitterui.jar
-Bundle-Activator: net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin
+Bundle-Activator: org.webcat.eclipse.submitter.ui.SubmitterUIPlugin
 Bundle-Vendor: Virginia Tech Computer Science
-Export-Package: net.sf.webcat.eclipse.submitter.ui,
- net.sf.webcat.eclipse.submitter.ui.actions,
- net.sf.webcat.eclipse.submitter.ui.dialogs,
- net.sf.webcat.eclipse.submitter.ui.editors,
- net.sf.webcat.eclipse.submitter.ui.popup.actions,
- net.sf.webcat.eclipse.submitter.ui.wizards
+Export-Package: org.webcat.eclipse.submitter.ui,
+ org.webcat.eclipse.submitter.ui.actions,
+ org.webcat.eclipse.submitter.ui.dialogs,
+ org.webcat.eclipse.submitter.ui.editors,
+ org.webcat.eclipse.submitter.ui.popup.actions,
+ org.webcat.eclipse.submitter.ui.wizards
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
- net.sf.webcat.eclipse.submitter
+ org.webcat.eclipse.submitter
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
