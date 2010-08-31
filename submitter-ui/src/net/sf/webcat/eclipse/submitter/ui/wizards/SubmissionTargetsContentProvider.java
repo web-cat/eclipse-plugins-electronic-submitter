@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 import net.sf.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
 
-import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.webcat.submitter.targets.ImportGroupTarget;
@@ -36,19 +35,6 @@ import org.webcat.submitter.targets.SubmissionTarget;
 public class SubmissionTargetsContentProvider implements ITreeContentProvider
 {
 	// === Methods ============================================================
-
-	// ------------------------------------------------------------------------
-	/**
-	 * Creates a new instance of the content provider.
-	 * 
-	 * @param context
-	 *            The context on which to execute operations.
-	 */
-	public SubmissionTargetsContentProvider(IRunnableContext context)
-	{
-		this.context = context;
-	}
-
 
 	// ------------------------------------------------------------------------
 	/*
@@ -180,9 +166,4 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 * The root of the submission target tree.
 	 */
 	private SubmissionTarget root;
-
-	/**
-	 * The context on which to execute submission target tree operations.
-	 */
-	private IRunnableContext context;
 }

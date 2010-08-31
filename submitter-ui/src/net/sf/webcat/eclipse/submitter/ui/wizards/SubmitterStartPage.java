@@ -165,8 +165,8 @@ public class SubmitterStartPage extends WizardPage
 		submitLabel.setLayoutData(gd);
 
 		assignmentTree = new TreeViewer(composite);
-		assignmentTree.setContentProvider(new SubmissionTargetsContentProvider(
-		        context));
+		assignmentTree.setContentProvider(
+				new SubmissionTargetsContentProvider());
 		assignmentTree.setLabelProvider(new SubmissionTargetsLabelProvider());
 		assignmentTree.setInput(submitter.getRoot());
 

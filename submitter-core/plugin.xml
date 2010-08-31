@@ -2,50 +2,12 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-     <extension-point id="protocols" name="Transport Protocols" schema="schema/protocols.exsd"/>
-   <extension-point id="packagers" name="Submission Packagers" schema="schema/packagers.exsd"/>
-   <extension-point id="submissionListeners" name="Submission Listeners" schema="schema/submissionListeners.exsd"/>
-   
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="net.sf.webcat.eclipse.submitter.internal.core.preferences.SubmissionPreferencePage"
             name="Electronic Submission"
             id="net.sf.webcat.eclipse.submitter.preferences.submission"/>
-   </extension>
-   <extension
-         point="net.sf.webcat.eclipse.submitter.protocols">
-      <protocol
-            class="net.sf.webcat.eclipse.submitter.internal.protocols.HttpProtocol"
-            scheme="http"
-            name="HTTP POST method protocol"/>
-      <protocol
-            class="net.sf.webcat.eclipse.submitter.internal.protocols.FtpProtocol"
-            scheme="ftp"
-            name="FTP protocol"/>
-      <protocol
-            class="net.sf.webcat.eclipse.submitter.internal.protocols.FileProtocol"
-            scheme="file"
-            name="Local file system protocol"/>
-      <protocol
-            class="net.sf.webcat.eclipse.submitter.internal.protocols.MailtoProtocol"
-            scheme="mailto"
-            name="E-mail protocol"/>
-      <protocol
-            class="net.sf.webcat.eclipse.submitter.internal.protocols.HttpsProtocol"
-            name="Secure HTTP POST method protocol"
-            scheme="https"/>
-   </extension>
-   <extension
-         point="net.sf.webcat.eclipse.submitter.packagers">
-      <packager
-            class="net.sf.webcat.eclipse.submitter.internal.packagers.ZipPackager"
-            name="ZIP archive packager"
-            id="net.sf.webcat.eclipse.submitter.packagers.zip"/>
-      <packager
-            class="net.sf.webcat.eclipse.submitter.internal.packagers.JarPackager"
-            name="Java JAR archive packager"
-            id="net.sf.webcat.eclipse.submitter.packagers.jar"/>
    </extension>
 
 </plugin>
