@@ -17,12 +17,11 @@
  */
 package net.sf.webcat.eclipse.submitter.ui.wizards;
 
-import net.sf.webcat.eclipse.submitter.core.INameableTarget;
-import net.sf.webcat.eclipse.submitter.core.ITarget;
 import net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.webcat.submitter.targets.SubmissionTarget;
 
 /**
  * The label provider for the submission target tree in the wizard.
@@ -69,7 +68,8 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 	 */
 	public Image getImage(Object element)
 	{
-		ITarget object = (ITarget)element;
+		SubmissionTarget object = (SubmissionTarget)element;
+		
 		if(object.isContainer())
 			return folderImage;
 		else
@@ -85,13 +85,10 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 	 */
 	public String getText(Object element)
 	{
-		ITarget object = (ITarget)element;
+		SubmissionTarget object = (SubmissionTarget)element;
 
-		INameableTarget nameable = (INameableTarget)object
-		        .getAdapter(INameableTarget.class);
-
-		if(nameable != null && nameable.getName() != null)
-			return nameable.getName();
+		if(object.getName() != null)
+			return object.getName();
 		else
 			return super.getText(element);
 	}

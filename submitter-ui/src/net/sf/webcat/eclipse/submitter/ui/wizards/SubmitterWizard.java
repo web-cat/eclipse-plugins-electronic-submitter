@@ -17,7 +17,7 @@
  */
 package net.sf.webcat.eclipse.submitter.ui.wizards;
 
-import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
+import net.sf.webcat.eclipse.submitter.core.RunnableContextLongRunningTaskManager;
 import net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 import net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor;
 import net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditorInput;
@@ -26,6 +26,7 @@ import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
+import org.webcat.submitter.Submitter;
 
 /**
  * The main wizard that allows the user to electronically submit a project
@@ -42,20 +43,23 @@ public class SubmitterWizard extends Wizard
 	{
 		// Add the wizard pages to the wizard.
 
-		startPage = new SubmitterStartPage(engine, project);
-		finalPage = new SubmitterSummaryPage(engine, project);
+		startPage = new SubmitterStartPage(submitter, project);
+		finalPage = new SubmitterSummaryPage(submitter, project);
 
 		addPage(startPage);
 		addPage(finalPage);
+
+		submitter.setLongRunningTaskManager(
+				new RunnableContextLongRunningTaskManager(getContainer()));
 	}
 
 
 	// ------------------------------------------------------------------------
-	public void init(ISubmissionEngine engine, IProject project)
+	public void init(Submitter submitter, IProject project)
 	{
 		// Initialize the wizard.
 
-		this.engine = engine;
+		this.submitter = submitter;
 		this.project = project;
 		this.setWindowTitle(Messages.WIZARD_TITLE);
 
@@ -79,18 +83,25 @@ public class SubmitterWizard extends Wizard
 
 
 	// ------------------------------------------------------------------------
+	public void setProject(IProject project)
+	{
+		this.project = project;
+	}
+
+
+	// ------------------------------------------------------------------------
 	public boolean performFinish()
 	{
 		// Now that the submission is complete, if the submission generated a
 		// response (e.g., HTTP POST), we should display that to the user in
 		// an embedded browser window.
 
-		if(engine.hasResponse())
+		if(submitter.hasResponse())
 		{
 			try
 			{
 				BrowserEditorInput input = new BrowserEditorInput(project,
-				        engine.getSubmissionResponse());
+				        submitter.getResponse());
 
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				        .getActivePage().openEditor(input, BrowserEditor.ID);
@@ -100,6 +111,8 @@ public class SubmitterWizard extends Wizard
 				System.out.println(e.toString());
 			}
 		}
+
+		submitter.setLongRunningTaskManager(null);
 
 		return true;
 	}
@@ -122,7 +135,7 @@ public class SubmitterWizard extends Wizard
 	/**
 	 * A reference to the submission engine that should be used by the wizard.
 	 */
-	private ISubmissionEngine engine;
+	private Submitter submitter;
 
 	/**
 	 * A reference to the project that will be submitted.

@@ -19,14 +19,13 @@ package net.sf.webcat.eclipse.submitter.ui.wizards;
 
 import java.util.ArrayList;
 
-import net.sf.webcat.eclipse.submitter.core.IHideableTarget;
-import net.sf.webcat.eclipse.submitter.core.ITarget;
-import net.sf.webcat.eclipse.submitter.core.ITargetImportGroup;
 import net.sf.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
 
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.webcat.submitter.targets.ImportGroupTarget;
+import org.webcat.submitter.targets.SubmissionTarget;
 
 /**
  * The content provider for the tree that displays the submission targets in the
@@ -59,9 +58,10 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public Object[] getChildren(Object parentElement)
 	{
-		ITarget obj = (ITarget)parentElement;
+		SubmissionTarget obj = (SubmissionTarget)parentElement;
 
-		ArrayList<ITarget> children = new ArrayList<ITarget>();
+		ArrayList<SubmissionTarget> children =
+			new ArrayList<SubmissionTarget>();
 		computeChildren(obj, children);
 		return children.toArray();
 	}
@@ -72,20 +72,17 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 * Computes the visible children of the specified node, displaying a message
 	 * to the user if any errors occur.
 	 */
-	private void computeChildren(ITarget obj, ArrayList<ITarget> list)
+	private void computeChildren(SubmissionTarget obj,
+			                     ArrayList<SubmissionTarget> list)
 	{
 		try
 		{
-			ITarget[] children = obj.getChildren(context);
+			SubmissionTarget[] children = obj.getLogicalChildren();
 			for(int i = 0; i < children.length; i++)
 			{
-				ITarget child = children[i];
+				SubmissionTarget child = children[i];
 
-				IHideableTarget hideable = (IHideableTarget)child
-				        .getAdapter(IHideableTarget.class);
-
-				if(hideable == null
-				        || (hideable != null && !hideable.isHidden()))
+				if(!child.isHidden())
 				{
 					if(child.isContainer() && !child.isNested())
 						computeChildren(child, list);
@@ -113,7 +110,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public Object getParent(Object element)
 	{
-		return ((ITarget)element).parent();
+		return ((SubmissionTarget)element).parent();
 	}
 
 
@@ -125,7 +122,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public boolean hasChildren(Object element)
 	{
-		if(element instanceof ITargetImportGroup)
+		if(element instanceof ImportGroupTarget)
 		{
 			// If it's an imported group, it might have children.
 			// Chances are it does. We want expand logic here.
@@ -133,8 +130,9 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 		}
 		else
 		{
-			ArrayList<ITarget> children = new ArrayList<ITarget>();
-			computeChildren((ITarget)element, children);
+			ArrayList<SubmissionTarget> children =
+				new ArrayList<SubmissionTarget>();
+			computeChildren((SubmissionTarget)element, children);
 			return children.size() > 0;
 		}
 	}
@@ -172,7 +170,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
 	{
-		root = (ITarget)newInput;
+		root = (SubmissionTarget) newInput;
 	}
 
 	
@@ -181,7 +179,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	/**
 	 * The root of the submission target tree.
 	 */
-	private ITarget root;
+	private SubmissionTarget root;
 
 	/**
 	 * The context on which to execute submission target tree operations.

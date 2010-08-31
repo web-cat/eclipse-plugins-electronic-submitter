@@ -17,7 +17,9 @@
  */
 package net.sf.webcat.eclipse.submitter.ui.wizards;
 
-import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 
 import org.eclipse.core.resources.IProject;
@@ -32,6 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.webcat.submitter.Submitter;
 
 /**
  * The summary page shows the status of the submission, as well as any errors
@@ -52,7 +55,7 @@ public class SubmitterSummaryPage extends WizardPage
 	 * @param project
 	 *            The project being submitted.
 	 */
-	protected SubmitterSummaryPage(ISubmissionEngine engine, IProject project)
+	protected SubmitterSummaryPage(Submitter engine, IProject project)
 	{
 		super(Messages.SUMMARYPAGE_PAGE_NAME);
 
@@ -99,7 +102,7 @@ public class SubmitterSummaryPage extends WizardPage
 		summaryLabel.setLayoutData(gd);
 
 		descriptionField = new Text(subComposite, SWT.READ_ONLY | SWT.MULTI
-		        | SWT.WRAP);
+		        | SWT.WRAP | SWT.V_SCROLL);
 		gd = new GridData(GridData.FILL_BOTH);
 		descriptionField.setLayoutData(gd);
 
@@ -134,6 +137,32 @@ public class SubmitterSummaryPage extends WizardPage
 	 */
 	public void setResultCode(int result, String description)
 	{
+		setResultCode(result, description, null);
+	}
+
+
+	// ------------------------------------------------------------------------
+	/**
+	 * Sets the result code/error status that will be displayed in the summary.
+	 * 
+	 * @param result
+	 *            One of the RESULT_* values indicating the status of the
+	 *            submission.
+	 * @param description
+	 *            A String containing a description of the error.
+	 * @param throwable
+	 *            A throwable or exception describing an error in more detail.
+	 */
+	public void setResultCode(int result, String description,
+			Throwable throwable)
+	{
+		if (throwable != null)
+		{
+			StringWriter writer = new StringWriter();
+			throwable.printStackTrace(new PrintWriter(writer));
+			description = description + writer.toString();
+		}
+
 		switch(result)
 		{
 		case RESULT_OK:

@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
+import net.sf.webcat.eclipse.submitter.core.RunnableContextLongRunningTaskManager;
 import net.sf.webcat.eclipse.submitter.core.SubmitterCore;
 import net.sf.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
 import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
@@ -37,6 +37,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.webcat.submitter.Submitter;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -139,8 +140,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	public void spawnSubmissionUI(Shell shell, IProject project)
 	{
 		URL url;
-		ISubmissionEngine engine = SubmitterCore.getDefault()
-		        .createSubmissionEngine();
+		Submitter engine = new Submitter();
 
 		try
 		{
@@ -148,9 +148,14 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 			        SubmitterCore.DEFINITIONS_URL));
 
 			ProgressMonitorDialog dlg = new ProgressMonitorDialog(shell);
-
-
-			engine.openDefinitions(url, dlg);
+			
+			RunnableContextLongRunningTaskManager taskManager =
+				new RunnableContextLongRunningTaskManager(dlg);
+			engine.setLongRunningTaskManager(taskManager);
+			
+			engine.readSubmissionTargets(url);
+			
+			engine.setLongRunningTaskManager(null);
 		}
 		catch(MalformedURLException e)
 		{
@@ -202,6 +207,20 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 
 		return null;
 	}
+	
+	
+	// ------------------------------------------------------------------------
+	public String getLastSelectedAssignmentPath()
+	{
+		return lastSelectedAssignmentPath;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setLastSelectedAssignmentPath(String path)
+	{
+		lastSelectedAssignmentPath = path;
+	}
 
 
 	// === Static Variables ===================================================
@@ -223,4 +242,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	 * The resource bundle of the plug-in.
 	 */
 	private ResourceBundle resourceBundle;
+	
+	
+	private String lastSelectedAssignmentPath;
 }

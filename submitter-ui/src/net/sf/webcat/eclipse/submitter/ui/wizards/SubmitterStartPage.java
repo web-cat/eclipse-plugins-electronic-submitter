@@ -21,13 +21,10 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import net.sf.webcat.eclipse.submitter.core.ISubmissionEngine;
-import net.sf.webcat.eclipse.submitter.core.ITarget;
-import net.sf.webcat.eclipse.submitter.core.RequiredFilesMissingException;
-import net.sf.webcat.eclipse.submitter.core.SubmissionParameters;
-import net.sf.webcat.eclipse.submitter.core.SubmissionTargetException;
+import net.sf.webcat.eclipse.submitter.core.SubmittableEclipseResource;
 import net.sf.webcat.eclipse.submitter.core.SubmitterCore;
 import net.sf.webcat.eclipse.submitter.ui.SWTUtil;
+import net.sf.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 
 import org.eclipse.core.resources.IProject;
@@ -51,8 +48,16 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.webcat.submitter.RequiredItemsMissingException;
+import org.webcat.submitter.SubmissionManifest;
+import org.webcat.submitter.SubmissionTargetException;
+import org.webcat.submitter.Submitter;
+import org.webcat.submitter.targets.AssignmentTarget;
+import org.webcat.submitter.targets.SubmissionTarget;
 
 /**
  * The main page of the submission wizard contains the assignment tree and other
@@ -68,19 +73,19 @@ public class SubmitterStartPage extends WizardPage
 	/**
 	 * Creates a new instance of the main wizard page.
 	 * 
-	 * @param engine
+	 * @param submitter
 	 *            The ISubmissionEngine to which to submit.
 	 * @param project
 	 *            The project being submitted.
 	 */
-	protected SubmitterStartPage(ISubmissionEngine engine, IProject project)
+	protected SubmitterStartPage(Submitter submitter, IProject project)
 	{
 		super(Messages.STARTPAGE_PAGE_NAME);
 
 		setTitle(Messages.STARTPAGE_PAGE_TITLE);
 		setDescription(Messages.STARTPAGE_PAGE_DESCRIPTION);
 
-		this.engine = engine;
+		this.submitter = submitter;
 		this.project = project;
 	}
 
@@ -92,11 +97,19 @@ public class SubmitterStartPage extends WizardPage
 	 * @return The IDefinitionObject representing the currently selected
 	 *         assignment.
 	 */
-	public ITarget getSelectedAssignment()
+	public AssignmentTarget getSelectedAssignment()
 	{
 		IStructuredSelection sel = (IStructuredSelection)assignmentTree
 		        .getSelection();
-		return (ITarget)sel.getFirstElement();
+		
+		if (sel.getFirstElement() instanceof AssignmentTarget)
+		{
+			return (AssignmentTarget) sel.getFirstElement();
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 
@@ -155,7 +168,7 @@ public class SubmitterStartPage extends WizardPage
 		assignmentTree.setContentProvider(new SubmissionTargetsContentProvider(
 		        context));
 		assignmentTree.setLabelProvider(new SubmissionTargetsLabelProvider());
-		assignmentTree.setInput(engine.getRoot());
+		assignmentTree.setInput(submitter.getRoot());
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.heightHint = 150;
@@ -201,7 +214,8 @@ public class SubmitterStartPage extends WizardPage
 		        SubmitterCore.IDENTIFICATION_DEFAULTUSERNAME);
 		username.setText(defUsername);
 
-		expandAllLocalGroups(engine.getRoot(), context);
+		expandAllLocalGroups(submitter.getRoot(), context);
+		selectLastSelectedAssignmentInTree();		
 		initializationComplete = true;
 	}
 
@@ -232,6 +246,11 @@ public class SubmitterStartPage extends WizardPage
 		{
 			project = (IProject)dialog.getResult()[0];
 			projectField.setText(project.getName());
+			
+			// Update the wizard's copy of the project as well so that the
+			// internal result browser gets initialized correctly.
+
+			((SubmitterWizard) getWizard()).setProject(project);
 		}
 
 		updatePageComplete();
@@ -239,15 +258,16 @@ public class SubmitterStartPage extends WizardPage
 
 
 	// ------------------------------------------------------------------------
-	private void expandAllLocalGroups(ITarget obj, IRunnableContext context)
+	private void expandAllLocalGroups(SubmissionTarget obj,
+			                          IRunnableContext context)
 	{
 		try
 		{
-			ITarget[] children = obj.getChildren(context);
+			SubmissionTarget[] children = obj.getLogicalChildren();
 
 			for(int i = 0; i < children.length; i++)
 			{
-				ITarget child = children[i];
+				SubmissionTarget child = children[i];
 
 				if(child.isLoaded())
 				{
@@ -306,7 +326,7 @@ public class SubmitterStartPage extends WizardPage
 			return;
 		}
 
-		ITarget object = getSelectedAssignment();
+		SubmissionTarget object = getSelectedAssignment();
 
 		if(object == null || !object.isActionable())
 		{
@@ -336,20 +356,23 @@ public class SubmitterStartPage extends WizardPage
 
 		if(isPageComplete())
 		{
-			SubmissionParameters params = new SubmissionParameters();
-			params.setAssignment(getSelectedAssignment());
-			params.setProject(project);
-			params.setUsername(username.getText().trim());
-			params.setPassword(password.getText());
+			updateLastSelectedAssignmentPath();
+
+			SubmissionManifest manifeset = new SubmissionManifest();
+			manifeset.setAssignment(getSelectedAssignment());
+			manifeset.setSubmittableItems(
+					new SubmittableEclipseResource(project));
+			manifeset.setUsername(username.getText().trim());
+			manifeset.setPassword(password.getText());
 
 			try
 			{
-				engine.submitProject(this.getContainer(), params);
-
+				submitter.submit(manifeset);
+				
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_OK,
 				        Messages.STARTPAGE_CLICK_FINISH_TO_EXIT);
 			}
-			catch(RequiredFilesMissingException e)
+			catch(RequiredItemsMissingException e)
 			{
 				StringBuffer buffer = new StringBuffer();
 				buffer.append(Messages.STARTPAGE_ERROR_REQUIRED_FILES_MISSING);
@@ -368,27 +391,103 @@ public class SubmitterStartPage extends WizardPage
 			catch(MalformedURLException e)
 			{
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_ERROR,
-				        Messages.STARTPAGE_ERROR_BAD_URL + e.toString());
+				        Messages.STARTPAGE_ERROR_BAD_URL, e);
 			}
 			catch(UnknownHostException e)
 			{
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_ERROR,
-				        Messages.STARTPAGE_ERROR_COULD_NOT_CONNECT
-				                + e.toString());
-			}
-			catch(InterruptedException e)
-			{
-				nextPage.setResultCode(SubmitterSummaryPage.RESULT_CANCELED,
-				        Messages.STARTPAGE_SUBMISSION_CANCELED);
+				        Messages.STARTPAGE_ERROR_COULD_NOT_CONNECT, e);
 			}
 			catch(Throwable e)
 			{
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_ERROR,
-				        Messages.STARTPAGE_ERROR_GENERIC + e.toString());
+				        Messages.STARTPAGE_ERROR_GENERIC, e);
 			}
 		}
 
 		return nextPage;
+	}
+	
+
+	// ----------------------------------------------------------
+	private void selectLastSelectedAssignmentInTree()
+	{
+		String path = 
+			SubmitterUIPlugin.getDefault().getLastSelectedAssignmentPath();
+
+		Tree tree = assignmentTree.getTree();
+		TreeItem item = null;
+
+		if (path != null)
+		{
+			String[] components = path.split("/\\$#\\$/");
+			TreeItem[] children = tree.getItems();
+
+			for (String component : components)
+			{
+				item = findTreeItemWithText(component, children);
+				
+				if (item == null)
+				{
+					return;
+				}
+				else
+				{
+					item.setExpanded(true);
+					children = item.getItems();
+				}
+			}
+
+			if (item != null)
+			{
+				tree.select(item);
+			}
+		}
+	}
+
+
+	// ----------------------------------------------------------
+	private TreeItem findTreeItemWithText(String text, TreeItem[] items)
+	{
+		for (TreeItem item : items)
+		{
+			if (item.getText().equals(text))
+			{
+				return item;
+			}
+		}
+		
+		return null;
+	}
+
+
+	// ----------------------------------------------------------
+	private void updateLastSelectedAssignmentPath()
+	{
+		Tree tree = assignmentTree.getTree();
+		
+		TreeItem[] selItems = tree.getSelection();
+		
+		if (selItems != null && selItems.length > 0)
+		{
+			TreeItem item = selItems[0];
+			StringBuffer buffer = new StringBuffer();
+
+			buffer.append(item.getText());
+
+			while ((item = item.getParentItem()) != null)
+			{
+				buffer.insert(0, "/$#$/");
+				buffer.insert(0, item.getText());
+			}
+
+			SubmitterUIPlugin.getDefault().setLastSelectedAssignmentPath(
+				buffer.toString());
+		}
+		else
+		{
+			SubmitterUIPlugin.getDefault().setLastSelectedAssignmentPath(null);
+		}
 	}
 
 
@@ -398,7 +497,7 @@ public class SubmitterStartPage extends WizardPage
 	 * The submission engine instance that should be used by this wizard to
 	 * submit the project.
 	 */
-	private ISubmissionEngine engine;
+	private Submitter submitter;
 
 	/**
 	 * The currently selected project that will be submitted by the wizard.

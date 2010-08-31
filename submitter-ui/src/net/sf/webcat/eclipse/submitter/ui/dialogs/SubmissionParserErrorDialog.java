@@ -17,9 +17,6 @@
  */
 package net.sf.webcat.eclipse.submitter.ui.dialogs;
 
-import net.sf.webcat.eclipse.submitter.core.SubmissionTargetException;
-import net.sf.webcat.eclipse.submitter.core.TargetParseError;
-import net.sf.webcat.eclipse.submitter.core.TargetParseException;
 import net.sf.webcat.eclipse.submitter.ui.i18n.Messages;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -33,6 +30,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.webcat.submitter.SubmissionTargetException;
+import org.webcat.submitter.TargetParseError;
+import org.webcat.submitter.TargetParseException;
 
 /**
  * Displays to the user any errors that occurred during the parsing of the
@@ -158,7 +158,7 @@ public class SubmissionParserErrorDialog extends Dialog
 	private void setFromException(Throwable e)
 	{
 		if(e instanceof SubmissionTargetException)
-			e = ((SubmissionTargetException)e).getInnerException();
+			e = ((SubmissionTargetException)e).getCause();
 
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(e.toString());
