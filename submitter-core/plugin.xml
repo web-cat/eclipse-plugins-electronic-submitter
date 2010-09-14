@@ -7,7 +7,13 @@
       <page
             class="org.webcat.eclipse.submitter.internal.core.preferences.SubmissionPreferencePage"
             name="Electronic Submission"
-            id="org.webcat.eclipse.submitter.preferences.submission"/>
+            id="net.sf.webcat.eclipse.submitter.preferences.submission"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.webcat.eclipse.submitter.core.OpenWebCATEnablementUpdater">
+      </startup>
    </extension>
 
 </plugin>

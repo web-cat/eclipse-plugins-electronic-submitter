@@ -133,7 +133,7 @@ public class BrowserEditor extends EditorPart
 	 * The extension identifier for this editor.
 	 */
 	public static final String ID =
-		"org.webcat.eclipse.submitter.ui.editors.BrowserEditor";
+		"net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor";
 
 	
 	// === Instance Variables =================================================

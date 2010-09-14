@@ -83,6 +83,10 @@ public class Messages extends NLS
 
 	public static String STARTPAGE_PASSWORD;
 
+	public static String STARTPAGE_PARTNERS_DESCRIPTION;
+
+	public static String STARTPAGE_PARTNERS;
+
 	public static String STARTPAGE_PROJECT;
 
 	public static String STARTPAGE_SUBMISSION_CANCELED;

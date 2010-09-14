@@ -20,6 +20,7 @@ package org.webcat.eclipse.submitter.ui.wizards;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 import org.eclipse.core.resources.IProject;
@@ -164,7 +165,8 @@ public class SubmitterStartPage extends WizardPage
 		gd = new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false);
 		submitLabel.setLayoutData(gd);
 
-		assignmentTree = new TreeViewer(composite);
+		assignmentTree = new TreeViewer(composite,
+				SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		assignmentTree.setContentProvider(
 				new SubmissionTargetsContentProvider());
 		assignmentTree.setLabelProvider(new SubmissionTargetsLabelProvider());
@@ -208,15 +210,73 @@ public class SubmitterStartPage extends WizardPage
 			}
 		});
 
+		separator = new Label(composite, SWT.HORIZONTAL | SWT.SEPARATOR);
+		gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
+		gd.horizontalSpan = 2;
+		gd.heightHint = 12;
+		separator.setLayoutData(gd);
+
+		partnersLabel = new Label(composite, SWT.NONE | SWT.WRAP);
+		partnersLabel.setText(Messages.STARTPAGE_PARTNERS_DESCRIPTION);
+		gd = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		gd.horizontalSpan = 2;
+		gd.widthHint = 450;
+		partnersLabel.setLayoutData(gd);
+
+		partnersLabel2 = new Label(composite, SWT.NONE);
+		partnersLabel2.setText(Messages.STARTPAGE_PARTNERS);
+		partners = new Text(composite, SWT.BORDER);
+		gd = new GridData();
+		gd.widthHint = 300;
+		partners.setLayoutData(gd);
+
+		partnersLabel.setVisible(false);
+		partnersLabel2.setVisible(false);
+		partners.setVisible(false);
+
 		setControl(composite);
 
 		String defUsername = SubmitterCore.getDefault().getOption(
 		        SubmitterCore.IDENTIFICATION_DEFAULTUSERNAME);
+		
+		if (defUsername == null || defUsername.length() == 0)
+		{
+			defUsername =
+				SubmitterUIPlugin.getDefault().getLastEnteredUsername();
+		}
+
+		if (defUsername == null)
+		{
+			defUsername = "";
+		}
+
 		username.setText(defUsername);
+
+		String lastPassword =
+			SubmitterUIPlugin.getDefault().getLastEnteredPassword();
+
+		if (lastPassword == null)
+		{
+			lastPassword = "";
+		}
+
+		password.setText(lastPassword);
+
+		String lastPartners =
+			SubmitterUIPlugin.getDefault().getLastEnteredPartners();
+		
+		if (lastPartners == null)
+		{
+			lastPartners = "";
+		}
+
+		partners.setText(lastPartners);
 
 		expandAllLocalGroups(submitter.getRoot(), context);
 		selectLastSelectedAssignmentInTree();		
 		initializationComplete = true;
+		
+		updatePageComplete();
 	}
 
 
@@ -286,6 +346,49 @@ public class SubmitterStartPage extends WizardPage
 
 
 	// ------------------------------------------------------------------------
+	private boolean usesPartnersParameter(SubmissionTarget target)
+	{
+		try
+		{
+			Map<String, String> params;
+	
+			params = target.getPackagerParameters();
+			
+			for (Map.Entry<String, String> paramEntry : params.entrySet())
+			{
+				if (paramEntry.getValue().contains("${partners}"))
+				{
+					return true;
+				}
+			}
+
+			params = target.getTransportParameters();
+			
+			for (Map.Entry<String, String> paramEntry : params.entrySet())
+			{
+				if (paramEntry.getValue().contains("${partners}"))
+				{
+					return true;
+				}
+			}
+			
+			String transport = target.getTransport();
+			
+			if (transport.contains("${partners}"))
+			{
+				return true;
+			}
+			
+			return false;
+		}
+		catch (SubmissionTargetException e)
+		{
+			return false;
+		}
+	}
+
+
+	// ------------------------------------------------------------------------
 	private void assignmentTreeSelectionChanged()
 	{
 		updatePageComplete();
@@ -344,6 +447,15 @@ public class SubmitterStartPage extends WizardPage
 			return;
 		}
 
+		SubmissionTarget target = getSelectedAssignment();
+		
+		boolean usesPartners =
+			(target != null && usesPartnersParameter(target));
+		
+		partnersLabel.setVisible(usesPartners);
+		partnersLabel2.setVisible(usesPartners);
+		partners.setVisible(usesPartners);
+
 		setErrorMessage(null);
 	}
 
@@ -356,18 +468,28 @@ public class SubmitterStartPage extends WizardPage
 
 		if(isPageComplete())
 		{
-			updateLastSelectedAssignmentPath();
+			// Remember the last values entered in the wizard for the rest of
+			// the session.
 
-			SubmissionManifest manifeset = new SubmissionManifest();
-			manifeset.setAssignment(getSelectedAssignment());
-			manifeset.setSubmittableItems(
+			updateLastSelectedAssignmentPath();
+			SubmitterUIPlugin.getDefault().setLastEnteredUsername(
+					username.getText());
+			SubmitterUIPlugin.getDefault().setLastEnteredPassword(
+					password.getText());
+			SubmitterUIPlugin.getDefault().setLastEnteredPartners(
+					partners.getText());
+
+			SubmissionManifest manifest = new SubmissionManifest();
+			manifest.setAssignment(getSelectedAssignment());
+			manifest.setSubmittableItems(
 					new SubmittableEclipseResource(project));
-			manifeset.setUsername(username.getText().trim());
-			manifeset.setPassword(password.getText());
+			manifest.setUsername(username.getText().trim());
+			manifest.setPassword(password.getText());
+			manifest.setParameter("partners", partners.getText().trim());
 
 			try
 			{
-				submitter.submit(manifeset);
+				submitter.submit(manifest);
 				
 				nextPage.setResultCode(SubmitterSummaryPage.RESULT_OK,
 				        Messages.STARTPAGE_CLICK_FINISH_TO_EXIT);
@@ -526,6 +648,18 @@ public class SubmitterStartPage extends WizardPage
 	 * the remote submission target.
 	 */
 	private Text password;
+
+	/**
+	 * A label that appears with the partners field.
+	 */
+	private Label partnersLabel;
+	private Label partnersLabel2;
+
+	/**
+	 * A text field that optionally contains a comma-separated list of user
+	 * IDs that represent partners who should be attached to the assignment.
+	 */
+	private Text partners;
 
 	/**
 	 * Set to false while control initialization occurs so that an error message

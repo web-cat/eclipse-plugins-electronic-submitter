@@ -23,9 +23,13 @@ package org.webcat.eclipse.submitter.core;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 
 //--------------------------------------------------------------------------
 /**
@@ -50,8 +54,7 @@ public class SubmitterCore extends AbstractUIPlugin
 		try
 		{
 			resourceBundle = ResourceBundle.getBundle(
-					"org.webcat.eclipse.submitter.core."
-					+ "SubmitterCoreResources");
+					PLUGIN_ID + ".core.SubmitterCoreResources");
 		}
 		catch (MissingResourceException e)
 		{
@@ -69,6 +72,46 @@ public class SubmitterCore extends AbstractUIPlugin
 	public static SubmitterCore getDefault()
 	{
 		return plugin;
+	}
+
+	
+	// ----------------------------------------------------------
+	public void start(BundleContext context) throws Exception
+	{
+		super.start(context);
+		
+		getPreferenceStore().addPropertyChangeListener(
+				new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event)
+			{
+				if (DEFINITIONS_URL.equals(event.getProperty()))
+				{
+					updateOpenWebCATEnablement();
+				}
+			}			
+		});
+		
+		updateOpenWebCATEnablement();
+	}
+
+
+	// ----------------------------------------------------------
+	public void updateOpenWebCATEnablement()
+	{
+		String url = getPreferenceStore().getString(DEFINITIONS_URL);
+		boolean isWebCAT = false;
+
+		if (url != null && url.length() > 0)
+		{
+			Pattern wcPattern = Pattern.compile(
+					"https?://.+/Web-CAT.woa/.*",
+					Pattern.CASE_INSENSITIVE);
+			
+			isWebCAT = wcPattern.matcher(url).matches();
+		}
+		
+		System.setProperty(PROP_SUBMISSION_URL_IS_WEBCAT,
+				Boolean.toString(isWebCAT));
 	}
 
 
@@ -126,9 +169,8 @@ public class SubmitterCore extends AbstractUIPlugin
 	/* The shared instance of the plug-in. */
 	private static SubmitterCore plugin;
 
-	/* The plug-in identifier of the submitter's core support (value
-	   {@code "org.webcat.eclipse.submitter"}). */
-	public static final String PLUGIN_ID = "org.webcat.eclipse.submitter";
+	/* The plug-in identifier of the submitter's core support. */
+	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter";
 
 	/* The preference key that stores the URL to the submission targets
 	   file. */
@@ -145,6 +187,9 @@ public class SubmitterCore extends AbstractUIPlugin
 	/* The preference key that stores the e-mail address of the user. */
 	public static final String IDENTIFICATION_EMAILADDRESS = PLUGIN_ID
 	        + ".identification.emailAddress";
+
+	private static final String PROP_SUBMISSION_URL_IS_WEBCAT =
+			PLUGIN_ID + ".SubmissionURLIsWebCAT";
 
 	/* The plug-in's resource bundle. */
 	private ResourceBundle resourceBundle;

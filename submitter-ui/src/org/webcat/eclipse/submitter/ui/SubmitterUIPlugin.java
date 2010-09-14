@@ -1,5 +1,4 @@
 /*
- *	This file is part of Web-CAT Eclipse Plugins.
  *
  *	Web-CAT is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -58,8 +57,8 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 		plugin = this;
 		try
 		{
-			resourceBundle = ResourceBundle
-			        .getBundle("org.webcat.eclipse.submitter.ui.SubmitterUIPluginResources"); //$NON-NLS-1$
+			resourceBundle = ResourceBundle.getBundle(PLUGIN_ID +
+					".SubmitterUIPluginResources"); //$NON-NLS-1$
 		}
 		catch(MissingResourceException x)
 		{
@@ -210,6 +209,48 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	
 	
 	// ------------------------------------------------------------------------
+	public String getLastEnteredUsername()
+	{
+		return lastEnteredUsername;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setLastEnteredUsername(String username)
+	{
+		lastEnteredUsername = username;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String getLastEnteredPassword()
+	{
+		return lastEnteredPassword;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setLastEnteredPassword(String password)
+	{
+		lastEnteredPassword = password;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public String getLastEnteredPartners()
+	{
+		return lastEnteredPartners;
+	}
+
+
+	// ------------------------------------------------------------------------
+	public void setLastEnteredPartners(String partners)
+	{
+		lastEnteredPartners = partners;
+	}
+
+
+	// ------------------------------------------------------------------------
 	public String getLastSelectedAssignmentPath()
 	{
 		return lastSelectedAssignmentPath;
@@ -228,7 +269,7 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	/**
 	 * The unique identifier of the plug-in.
 	 */
-	public static final String PLUGIN_ID = "org.webcat.eclipse.submitter.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter.ui"; //$NON-NLS-1$
 
 	/**
 	 * The shared instance of the plug-in.
@@ -243,6 +284,11 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	 */
 	private ResourceBundle resourceBundle;
 	
-	
 	private String lastSelectedAssignmentPath;
+	
+	private String lastEnteredUsername;
+
+	private String lastEnteredPassword;
+	
+	private String lastEnteredPartners;
 }

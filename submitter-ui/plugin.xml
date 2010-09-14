@@ -6,13 +6,13 @@
       <objectContribution
             objectClass="org.eclipse.core.resources.IProject"
             adaptable="true"
-            id="org.webcat.eclipse.submitter.submitContribution">
+            id="net.sf.webcat.eclipse.submitter.submitContribution">
          <action
                enablesFor="1"
                label="Submit..."
                icon="icons/submit.gif"
                class="org.webcat.eclipse.submitter.ui.popup.actions.ProjectSubmitAction"
-               id="org.webcat.eclipse.submitter.submitAction"/>
+               id="net.sf.webcat.eclipse.submitter.submitAction"/>
       </objectContribution>
    </extension>
 
@@ -21,7 +21,7 @@
       <actionSet
             label="Electronic Submission"
             visible="true"
-            id="org.webcat.eclipse.submitter.SubmissionActionSet">
+            id="net.sf.webcat.eclipse.submitter.SubmissionActionSet">
          <action
                toolbarPath="submitGroup"
                label="&amp;Submit Project..."
@@ -31,7 +31,7 @@
                style="push"
                menubarPath="project/additions"
                state="false"
-               id="org.webcat.eclipse.submitter.ui.actions.ProjectSubmitAction"/>
+               id="net.sf.webcat.eclipse.submitter.ui.actions.ProjectSubmitAction"/>
       </actionSet>
    </extension>
 
@@ -41,7 +41,7 @@
             icon="icons/browser.gif"
             class="org.webcat.eclipse.submitter.ui.editors.BrowserEditor"
             name="Submission Results"
-            id="org.webcat.eclipse.submitter.ui.editors.BrowserEditor"/>
+            id="net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor"/>
    </extension>
 
 </plugin>
