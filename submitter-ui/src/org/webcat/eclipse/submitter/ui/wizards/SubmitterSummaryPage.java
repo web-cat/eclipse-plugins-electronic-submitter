@@ -102,7 +102,7 @@ public class SubmitterSummaryPage extends WizardPage
 		summaryLabel.setLayoutData(gd);
 
 		descriptionField = new Text(subComposite, SWT.READ_ONLY | SWT.MULTI
-		        | SWT.WRAP | SWT.V_SCROLL);
+		        | SWT.WRAP | SWT.V_SCROLL | SWT.BORDER);
 		gd = new GridData(GridData.FILL_BOTH);
 		descriptionField.setLayoutData(gd);
 

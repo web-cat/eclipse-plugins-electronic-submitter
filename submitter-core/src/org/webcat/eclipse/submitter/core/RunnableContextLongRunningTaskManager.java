@@ -70,7 +70,7 @@ public class RunnableContextLongRunningTaskManager implements
 	{
 		try
 		{
-			context.run(true, true, new IRunnableWithProgress()
+			context.run(true, false, new IRunnableWithProgress()
 			{
 				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException
@@ -92,14 +92,14 @@ public class RunnableContextLongRunningTaskManager implements
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
+						throw new InvocationTargetException(e);
 					}
 				}			
 			});
 		}
 		catch (InterruptedException e)
 		{
-			e.printStackTrace();
+			SubmitterCore.log("The submitter engine task was interrupted", e);
 		}
 	}
 	

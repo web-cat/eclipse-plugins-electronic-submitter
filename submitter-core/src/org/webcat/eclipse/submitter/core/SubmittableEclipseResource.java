@@ -106,7 +106,7 @@ public class SubmittableEclipseResource implements ISubmittableItem
 				int i = 0;
 				for (IResource child : children)
 				{
-					items[i] = new SubmittableEclipseResource(child);
+					items[i] = new SubmittableEclipseResource(this, child);
 					i++;
 				}
 				

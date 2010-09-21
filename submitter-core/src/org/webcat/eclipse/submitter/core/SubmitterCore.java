@@ -25,6 +25,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -75,6 +77,33 @@ public class SubmitterCore extends AbstractUIPlugin
 	}
 
 	
+	// ----------------------------------------------------------
+	/**
+	 * Writes a log message to the Eclipse error log.
+	 * 
+	 * @param message the log message
+	 */
+	public static void log(String message)
+	{
+		log(message, null);
+	}
+
+	
+	// ----------------------------------------------------------
+	/**
+	 * Writes a log message and its associated exception to the Eclipse
+	 * error log.
+	 * 
+	 * @param message the log message
+	 * @param exception the exception, or null if there wasn't one
+	 */
+	public static void log(String message, Exception exception)
+	{
+		getDefault().getLog().log(new Status(IStatus.ERROR,
+				SubmitterCore.PLUGIN_ID, IStatus.OK, message, exception));
+	}
+
+
 	// ----------------------------------------------------------
 	public void start(BundleContext context) throws Exception
 	{
