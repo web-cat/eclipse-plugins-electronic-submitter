@@ -60,8 +60,8 @@ public class SubmittableEclipseResource implements ISubmittableItem
 	{
 		this(null, resource);
 	}
-	
-	
+
+
 	// ----------------------------------------------------------
     /**
      * Initializes a new {@code SubmittableEclipseResource} with the specified
@@ -102,20 +102,20 @@ public class SubmittableEclipseResource implements ISubmittableItem
 
 				ISubmittableItem[] items =
 					new ISubmittableItem[children.length];
-				
+
 				int i = 0;
 				for (IResource child : children)
 				{
 					items[i] = new SubmittableEclipseResource(this, child);
 					i++;
 				}
-				
+
 				return items;
 			}
 			catch (CoreException e)
 			{
 				return new ISubmittableItem[0];
-			}			
+			}
 		}
 	}
 
@@ -136,7 +136,7 @@ public class SubmittableEclipseResource implements ISubmittableItem
 
             if (parentName.length() > 0)
             {
-                parentName += File.separator;
+                parentName += "/";
             }
 
             return parentName + resource.getName();
@@ -171,7 +171,7 @@ public class SubmittableEclipseResource implements ISubmittableItem
 		{
 			IFile file = (IFile) resource;
 			IPath path = file.getLocation();
-			
+
 			return new FileInputStream(path.toFile());
 		}
 		else
@@ -179,7 +179,7 @@ public class SubmittableEclipseResource implements ISubmittableItem
 			return null;
 		}
 	}
-	
+
 
     // ----------------------------------------------------------
     /**

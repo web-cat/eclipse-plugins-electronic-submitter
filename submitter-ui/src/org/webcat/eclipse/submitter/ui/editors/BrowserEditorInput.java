@@ -29,7 +29,7 @@ import org.webcat.eclipse.submitter.ui.i18n.Messages;
 /**
  * An editor input that represents HTML code from an HTTP response, which will
  * be displayed by the browser editor.
- * 
+ *
  * @author Tony Allevato (Virginia Tech Computer Science)
  */
 public class BrowserEditorInput implements IEditorInput
@@ -39,7 +39,7 @@ public class BrowserEditorInput implements IEditorInput
 	// ------------------------------------------------------------------------
 	/**
 	 * Creates a new instance of the BrowserEditorInput class.
-	 * 
+	 *
 	 * @param project
 	 *            the project whose submission created the response that will be
 	 *            displayed
