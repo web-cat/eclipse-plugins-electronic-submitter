@@ -1,20 +1,24 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui.wizards;
 
 import java.util.ArrayList;
@@ -26,17 +30,20 @@ import org.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
 import org.webcat.submitter.targets.ImportGroupTarget;
 import org.webcat.submitter.targets.SubmissionTarget;
 
+//--------------------------------------------------------------------------
 /**
- * The content provider for the tree that displays the submission targets in the
- * wizard.
- * 
- * @author Tony Allevato
+ * The content provider for the tree that displays the submission targets in
+ * the wizard.
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmissionTargetsContentProvider implements ITreeContentProvider
 {
-	// === Methods ============================================================
+	//~ Methods ...............................................................
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -53,7 +60,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Computes the visible children of the specified node, displaying a message
 	 * to the user if any errors occur.
@@ -64,20 +71,20 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 		try
 		{
 			SubmissionTarget[] children = obj.getLogicalChildren();
-			for(int i = 0; i < children.length; i++)
+			for (int i = 0; i < children.length; i++)
 			{
 				SubmissionTarget child = children[i];
 
-				if(!child.isHidden())
+				if (!child.isHidden())
 				{
-					if(child.isContainer() && !child.isNested())
+					if (child.isContainer() && !child.isNested())
 						computeChildren(child, list);
 					else
 						list.add(child);
 				}
 			}
 		}
-		catch(Throwable e)
+		catch (Throwable e)
 		{
 			SubmissionParserErrorDialog dlg = new SubmissionParserErrorDialog(
 			        null, e);
@@ -88,7 +95,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -96,11 +103,11 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public Object getParent(Object element)
 	{
-		return ((SubmissionTarget)element).parent();
+		return ((SubmissionTarget) element).parent();
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -108,10 +115,11 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public boolean hasChildren(Object element)
 	{
-		if(element instanceof ImportGroupTarget)
+		if (element instanceof ImportGroupTarget)
 		{
 			// If it's an imported group, it might have children.
 			// Chances are it does. We want expand logic here.
+
 			return true;
 		}
 		else
@@ -124,7 +132,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -136,7 +144,7 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -144,10 +152,11 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	 */
 	public void dispose()
 	{
+		// Do nothing.
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -160,10 +169,8 @@ public class SubmissionTargetsContentProvider implements ITreeContentProvider
 	}
 
 	
-	// === Instance Variables =================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * The root of the submission target tree.
-	 */
+	/* The root of the submission target tree. */
 	private SubmissionTarget root;
 }

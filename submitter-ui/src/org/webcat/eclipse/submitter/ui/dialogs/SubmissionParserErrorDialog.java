@@ -1,22 +1,25 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-package org.webcat.eclipse.submitter.ui.dialogs;
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
 
+package org.webcat.eclipse.submitter.ui.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -34,25 +37,26 @@ import org.webcat.submitter.SubmissionTargetException;
 import org.webcat.submitter.TargetParseError;
 import org.webcat.submitter.TargetParseException;
 
+//--------------------------------------------------------------------------
 /**
  * Displays to the user any errors that occurred during the parsing of the
  * submission definitions file.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmissionParserErrorDialog extends Dialog
 {
-	// === Methods ============================================================
+	//~ Constructors ..........................................................
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * Create a new instance of the error dialog with the specified parent shell
-	 * and getting its information from the given exception.
+	 * Create a new instance of the error dialog with the specified parent
+	 * shell and getting its information from the given exception.
 	 * 
-	 * @param shell
-	 *            The shell that will parent this dialog.
-	 * @param exception
-	 *            The exception described by the dialog.
+	 * @param shell the shell that will parent this dialog
+	 * @param exception the exception described by the dialog.
 	 */
 	public SubmissionParserErrorDialog(Shell shell, Throwable exception)
 	{
@@ -60,13 +64,19 @@ public class SubmissionParserErrorDialog extends Dialog
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 
 		if(exception instanceof TargetParseException)
+		{
 			setFromParseErrors(((TargetParseException)exception).getErrors());
+		}
 		else
+		{
 			setFromException(exception);
+		}
 	}
 
 
-	// ------------------------------------------------------------------------
+	//~ Methods ...............................................................
+
+	// ----------------------------------------------------------
 	/**
 	 * Creates the dialog controls.
 	 */
@@ -107,10 +117,14 @@ public class SubmissionParserErrorDialog extends Dialog
 		errorField.setLayoutData(gd);
 
 		if(errorString != null)
+		{
 			errorField.setText(errorString);
+		}
 
 		if(summaryString != null)
+		{
 			summaryLabel.setText(summaryString);
+		}
 
 		getShell().setText(Messages.PARSERERROR_DIALOG_TITLE);
 
@@ -118,19 +132,20 @@ public class SubmissionParserErrorDialog extends Dialog
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Creates the main buttons for the dialog.
 	 */
 	protected void createButtonsForButtonBar(Composite parent)
 	{
 		// Create only an OK button.
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-		        true);
+		
+		createButton(parent, IDialogConstants.OK_ID,
+				IDialogConstants.OK_LABEL, true);
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Initializes the dialog's text area with the specified array of parser
 	 * error objects.
@@ -151,20 +166,24 @@ public class SubmissionParserErrorDialog extends Dialog
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Initializes the dialog's text area with the specified exception.
 	 */
 	private void setFromException(Throwable e)
 	{
-		if(e instanceof SubmissionTargetException)
-			e = ((SubmissionTargetException)e).getCause();
+		Throwable exception = e;
+
+		if (e instanceof SubmissionTargetException)
+		{
+			exception = ((SubmissionTargetException) e).getCause();
+		}
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(e.toString());
+		buffer.append(exception.toString());
 		buffer.append("\n\n"); //$NON-NLS-1$
 
-		StackTraceElement[] trace = e.getStackTrace();
+		StackTraceElement[] trace = exception.getStackTrace();
 		for(int i = 0; i < trace.length; i++)
 		{
 			buffer.append(trace[i].toString());
@@ -177,25 +196,17 @@ public class SubmissionParserErrorDialog extends Dialog
 	}
 
 
-	// === Instance Variables =================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * The label that displays the description of the error.
-	 */
+	/* The label that displays the description of the error. */
 	private Label summaryLabel;
 
-	/**
-	 * The text field that displays the error list or stack trace.
-	 */
+	/* The text field that displays the error list or stack trace. */
 	private Text errorField;
 
-	/**
-	 * The string containing the description of the error.
-	 */
+	/* The string containing the description of the error. */
 	private String summaryString;
 
-	/**
-	 * The string containing the error list or stack trace.
-	 */
+	/* The string containing the error list or stack trace. */
 	private String errorString;
 }

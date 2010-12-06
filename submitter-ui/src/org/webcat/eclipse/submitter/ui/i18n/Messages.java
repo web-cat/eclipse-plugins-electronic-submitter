@@ -1,33 +1,52 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui.i18n;
 
 import org.eclipse.osgi.util.NLS;
 
+//--------------------------------------------------------------------------
 /**
  * The message bundle used by the submitter.ui plug-in.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
+@SuppressWarnings("all")
 public class Messages extends NLS
 {
-	private static final String BUNDLE_NAME =
-		"org.webcat.eclipse.submitter.ui.i18n.messages"; //$NON-NLS-1$
+	//~ Constructors ..........................................................
+
+	// ----------------------------------------------------------
+	/**
+	 * Prevent instantiation.
+	 */
+	private Messages()
+	{
+		// Prevent instantiation.
+	}
+
+
+	//~ Constants .............................................................
 
 	public static String AMBIGUOUSSELECTION_CANCEL;
 
@@ -40,6 +59,8 @@ public class Messages extends NLS
 	public static String AMBIGUOUSSELECTION_OPTION_1;
 
 	public static String AMBIGUOUSSELECTION_OPTION_2;
+
+	public static String BROWSEREDITOR_INVALID_INPUT;
 
 	public static String BROWSEREDITOR_TITLE;
 
@@ -111,14 +132,16 @@ public class Messages extends NLS
 
 	public static String WIZARD_TITLE;
 
+
+	//~ Static/instance variables .............................................
+
+	private static final String BUNDLE_NAME =
+		"org.webcat.eclipse.submitter.ui.i18n.messages"; //$NON-NLS-1$
+
 	static
 	{
-		// initialize resource bundle
+		// Initialize the strings.
+
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
-	}
-
-
-	private Messages()
-	{
 	}
 }

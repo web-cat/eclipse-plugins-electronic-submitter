@@ -1,38 +1,44 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-package org.webcat.eclipse.submitter.ui.wizards;
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
 
+package org.webcat.eclipse.submitter.ui.wizards;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 import org.webcat.submitter.targets.SubmissionTarget;
 
+//--------------------------------------------------------------------------
 /**
  * The label provider for the submission target tree in the wizard.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmissionTargetsLabelProvider extends LabelProvider
 {
-	// === Methods ============================================================
+	//~ Constructors ..........................................................
 	
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Creates a new instance of the label provider.
 	 */
@@ -45,7 +51,9 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 	}
 
 
-	// ------------------------------------------------------------------------
+	//~ Methods ...............................................................
+
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,7 +68,7 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -71,13 +79,17 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 		SubmissionTarget object = (SubmissionTarget)element;
 		
 		if(object.isContainer())
+		{
 			return folderImage;
+		}
 		else
+		{
 			return fileImage;
+		}
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -87,22 +99,22 @@ public class SubmissionTargetsLabelProvider extends LabelProvider
 	{
 		SubmissionTarget object = (SubmissionTarget)element;
 
-		if(object.getName() != null)
+		if (object.getName() != null)
+		{
 			return object.getName();
+		}
 		else
+		{
 			return super.getText(element);
+		}
 	}
 
 
-	// === Instance Variables =================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * The image used for assignment groups and imported groups.
-	 */
+	/* The image used for assignment groups and imported groups. */
 	private Image folderImage;
 
-	/**
-	 * The image used for assignment targets.
-	 */
+	/* The image used for assignment targets. */
 	private Image fileImage;
 }

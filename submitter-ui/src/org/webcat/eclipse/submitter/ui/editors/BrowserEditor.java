@@ -1,20 +1,24 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui.editors;
 
 import java.text.MessageFormat;
@@ -31,26 +35,31 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.webcat.eclipse.submitter.ui.i18n.Messages;
 
+//--------------------------------------------------------------------------
 /**
  * Implements an Eclipse editor that hosts the SWT Browser widget, so an HTML
  * page can be displayed in the workbench editor window.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class BrowserEditor extends EditorPart
 {
-	// === Methods ============================================================
+	//~ Methods ...............................................................
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the editor is initialized.
 	 */
 	public void init(IEditorSite site, IEditorInput input)
 	        throws PartInitException
 	{
-		if(!(input instanceof BrowserEditorInput))
+		if (!(input instanceof BrowserEditorInput))
+		{
 			throw new PartInitException(
-			        "Invalid Input: Must be BrowserEditorInput");
+			        Messages.BROWSEREDITOR_INVALID_INPUT);
+		}
 
 		setSite(site);
 		setInput(input);
@@ -62,7 +71,7 @@ public class BrowserEditor extends EditorPart
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Creates the embedded browser widget.
 	 */
@@ -72,30 +81,35 @@ public class BrowserEditor extends EditorPart
 		browser = new Browser(parent, SWT.NONE);
 
 		String html = editorInput.getHtml();
+		
 		if(html != null)
+		{
 			browser.setText(html);
+		}
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Saving is not implemented.
 	 */
 	public void doSave(IProgressMonitor monitor)
 	{
+		// Do nothing.
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Saving is not implemented.
 	 */
 	public void doSaveAs()
 	{
+		// Do nothing.
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Saving is not implemented, so the editor is never dirty.
 	 */
@@ -105,7 +119,7 @@ public class BrowserEditor extends EditorPart
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Saving is not implemented.
 	 */
@@ -115,7 +129,7 @@ public class BrowserEditor extends EditorPart
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Sets the focus to the embedded browser control when the editor is
 	 * activated.
@@ -123,28 +137,21 @@ public class BrowserEditor extends EditorPart
 	public void setFocus()
 	{
 		if(browser != null)
+		{
 			browser.setFocus();
+		}
 	}
 
 
-	// === Static Variables ===================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * The extension identifier for this editor.
-	 */
+	/** The extension identifier for this editor. */
 	public static final String ID =
-		"net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor";
-
+		"net.sf.webcat.eclipse.submitter.ui.editors.BrowserEditor"; //$NON-NLS-1$
 	
-	// === Instance Variables =================================================
-
-	/**
-	 * The embedded browser widget.
-	 */
+	/* The embedded browser widget. */
 	private Browser browser;
 
-	/**
-	 * The editor input used to initialize this editor.
-	 */
+	/* The editor input used to initialize this editor. */
 	private BrowserEditorInput editorInput;
 }

@@ -1,22 +1,25 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-package org.webcat.eclipse.submitter.ui.actions;
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
 
+package org.webcat.eclipse.submitter.ui.actions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,19 +31,20 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.webcat.eclipse.submitter.core.SubmitterCore;
 
+//--------------------------------------------------------------------------
 /**
- * The workbench action delegate that invokes the submission wizard. This action
- * is used by the Submit Project option in the Project menu, as well as the
- * Submit button in the main toolbar. (The Submit option in a project's context
- * menu is provided by the similar class in the .popup.actions package.)
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ * The workbench action delegate that opens a browser window to the Web-CAT
+ * server that this instance of Eclipse is configured to use.
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class OpenWebCATAction implements IWorkbenchWindowActionDelegate
 {
-	// === Methods ============================================================
+	//~ Methods ...............................................................
 	
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the workbench action is invoked.
 	 */
@@ -49,7 +53,8 @@ public class OpenWebCATAction implements IWorkbenchWindowActionDelegate
 		String url = SubmitterCore.getDefault().getPreferenceStore().getString(
 				SubmitterCore.DEFINITIONS_URL);
 
-		Pattern pattern = Pattern.compile("(https?://.+/Web-CAT.woa)",
+		Pattern pattern = Pattern.compile(
+				"(https?://.+/Web-CAT.woa)", //$NON-NLS-1$
 				Pattern.CASE_INSENSITIVE);
 		
 		Matcher matcher = pattern.matcher(url);
@@ -59,25 +64,29 @@ public class OpenWebCATAction implements IWorkbenchWindowActionDelegate
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public void selectionChanged(IAction action, ISelection selection)
 	{
+		// Do nothing.
 	}
 
-	// ------------------------------------------------------------------------
+	
+	// ----------------------------------------------------------
 	/**
 	 * Called when the delegate is disposed.
 	 */
 	public void dispose()
 	{
+		// Do nothing.
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the delegate is initialized.
 	 */
 	public void init(IWorkbenchWindow window)
 	{
+		// Do nothing.
 	}
 }

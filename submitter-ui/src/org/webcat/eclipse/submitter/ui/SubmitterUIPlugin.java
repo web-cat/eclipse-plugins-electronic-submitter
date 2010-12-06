@@ -1,26 +1,30 @@
-/*
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Platform;
@@ -30,7 +34,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
 import org.webcat.eclipse.submitter.core.RunnableContextLongRunningTaskManager;
 import org.webcat.eclipse.submitter.core.SubmitterCore;
 import org.webcat.eclipse.submitter.ui.dialogs.SubmissionParserErrorDialog;
@@ -38,18 +41,21 @@ import org.webcat.eclipse.submitter.ui.i18n.Messages;
 import org.webcat.eclipse.submitter.ui.wizards.SubmitterWizard;
 import org.webcat.submitter.Submitter;
 
+//--------------------------------------------------------------------------
 /**
- * The main plugin class to be used in the desktop.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ * The main plug-in class for the submitter user interface plug-in.
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmitterUIPlugin extends AbstractUIPlugin
 {
-	// === Methods ============================================================
+	//~ Constructors ..........................................................
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * The constructor.
+	 * Initializes a new instance of the SubmitterUIPlugin.
 	 */
 	public SubmitterUIPlugin()
 	{
@@ -67,29 +73,13 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	}
 
 
-	// ------------------------------------------------------------------------
+	//~ Methods ...............................................................
+
+	// ----------------------------------------------------------
 	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception
-	{
-		super.start(context);
-	}
-
-
-	// ------------------------------------------------------------------------
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception
-	{
-		super.stop(context);
-	}
-
-
-	// ------------------------------------------------------------------------
-	/**
-	 * Returns the shared instance.
+	 * Returns the shared instance of the plug-in.
+	 * 
+	 * @return the shared instance of the plug-in
 	 */
 	public static SubmitterUIPlugin getDefault()
 	{
@@ -97,10 +87,14 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * Returns the string from the plugin's resource bundle, or 'key' if not
-	 * found.
+	 * Returns the string from the plugin's resource bundle, or the key itself
+	 * if not found.
+	 * 
+	 * @param key the key of the string to return
+	 * @return the string with the specified key, or the key itself if the
+	 *     string was not found
 	 */
 	public static String getResourceString(String key)
 	{
@@ -117,9 +111,11 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * Returns the plugin's resource bundle,
+	 * Gets the plug-in's resource bundle.
+	 * 
+	 * @return the plug-in's resource bundle
 	 */
 	public ResourceBundle getResourceBundle()
 	{
@@ -127,14 +123,12 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Initializes the submission engine and invokes the submission wizard.
 	 * 
-	 * @param shell
-	 *            The shell that will be the parent to the wizard.
-	 * @param project
-	 *            The project to be submitted.
+	 * @param shell the shell that will be the parent to the wizard
+	 * @param project the Eclipse project to be submitted
 	 */
 	public void spawnSubmissionUI(Shell shell, IProject project)
 	{
@@ -180,115 +174,150 @@ public class SubmitterUIPlugin extends AbstractUIPlugin
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * Returns an image descriptor for the specified image in the plug-in's
+	 * Gets an image descriptor for the specified image in the plug-in's
 	 * "icons" directory.
 	 * 
-	 * @param path
-	 *            the path to the icon that should be loaded, relative to the
-	 *            "icons" folder in the plug-in
-	 * 
+	 * @param path the path to the icon that should be loaded, relative to
+	 *     the "icons" folder in the plug-in
 	 * @return an ImageDescriptor for the image
 	 */
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
 		try
 		{
-			URL base = Platform.getBundle(PLUGIN_ID).getEntry("/icons/"); //$NON-NLS-1$
+			URL base = Platform.getBundle(PLUGIN_ID).getEntry(
+					"/icons/"); //$NON-NLS-1$
 			URL url = new URL(base, path);
 
 			return ImageDescriptor.createFromURL(url);
 		}
 		catch(MalformedURLException e)
 		{
+			// Do nothing.
 		}
 
 		return null;
 	}
 	
 	
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Gets the most recently entered username in the submission wizard.
+	 * 
+	 * @return the most recently entered username
+	 */
 	public String getLastEnteredUsername()
 	{
 		return lastEnteredUsername;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Sets the most recently entered username in the submission wizard.
+	 * 
+	 * @param username the most recently entered username
+	 */
 	public void setLastEnteredUsername(String username)
 	{
 		lastEnteredUsername = username;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Gets the most recently entered password in the submission wizard.
+	 * 
+	 * @return the most recently entered password
+	 */
 	public String getLastEnteredPassword()
 	{
 		return lastEnteredPassword;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Sets the most recently entered password in the submission wizard.
+	 * 
+	 * @param password the most recently entered password
+	 */
 	public void setLastEnteredPassword(String password)
 	{
 		lastEnteredPassword = password;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Gets the most recently entered partner usernames in the submission
+	 * wizard.
+	 * 
+	 * @return the most recently entered partner usernames
+	 */
 	public String getLastEnteredPartners()
 	{
 		return lastEnteredPartners;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Sets the most recently entered partner usernames in the submission
+	 * wizard.
+	 * 
+	 * @param partners the most recently entered partner usernames
+	 */
 	public void setLastEnteredPartners(String partners)
 	{
 		lastEnteredPartners = partners;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Gets the path to the most recently selected assignment in the
+	 * submission wizard.
+	 * 
+	 * @return the path to the most recently selected assignment
+	 */
 	public String getLastSelectedAssignmentPath()
 	{
 		return lastSelectedAssignmentPath;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Sets the path to the most recently selected assignment in the
+	 * submission wizard.
+	 * 
+	 * @param path the path to the most recently selected assignment
+	 */
 	public void setLastSelectedAssignmentPath(String path)
 	{
 		lastSelectedAssignmentPath = path;
 	}
 
 
-	// === Static Variables ===================================================
+	//~ Static/instance variables .............................................
 
 	/**
 	 * The unique identifier of the plug-in.
 	 */
-	public static final String PLUGIN_ID = "net.sf.webcat.eclipse.submitter.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID =
+		"net.sf.webcat.eclipse.submitter.ui"; //$NON-NLS-1$
 
-	/**
-	 * The shared instance of the plug-in.
-	 */
+	/* The shared instance of the plug-in. */
 	private static SubmitterUIPlugin plugin;
 
-
-	// === Instance Variables =================================================
-
-	/**
-	 * The resource bundle of the plug-in.
-	 */
+	/* The resource bundle of the plug-in. */
 	private ResourceBundle resourceBundle;
 	
 	private String lastSelectedAssignmentPath;
-	
 	private String lastEnteredUsername;
-
 	private String lastEnteredPassword;
-	
 	private String lastEnteredPartners;
 }

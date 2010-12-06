@@ -1,22 +1,25 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-package org.webcat.eclipse.submitter.ui.wizards;
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
 
+package org.webcat.eclipse.submitter.ui.wizards;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
@@ -28,17 +31,20 @@ import org.webcat.eclipse.submitter.ui.editors.BrowserEditorInput;
 import org.webcat.eclipse.submitter.ui.i18n.Messages;
 import org.webcat.submitter.Submitter;
 
+//--------------------------------------------------------------------------
 /**
  * The main wizard that allows the user to electronically submit a project
  * through Eclipse.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmitterWizard extends Wizard
 {
-	// === Methods ============================================================
+	//~ Methods ...............................................................
 	
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public void addPages()
 	{
 		// Add the wizard pages to the wizard.
@@ -54,13 +60,19 @@ public class SubmitterWizard extends Wizard
 	}
 
 
-	// ------------------------------------------------------------------------
-	public void init(Submitter submitter, IProject project)
+	// ----------------------------------------------------------
+	/**
+	 * Initializes the wizard.
+	 * 
+	 * @param aSubmitter the submitter
+	 * @param aProject the project
+	 */
+	public void init(Submitter aSubmitter, IProject aProject)
 	{
 		// Initialize the wizard.
 
-		this.submitter = submitter;
-		this.project = project;
+		this.submitter = aSubmitter;
+		this.project = aProject;
 		this.setWindowTitle(Messages.WIZARD_TITLE);
 
 		this.setDefaultPageImageDescriptor(SubmitterUIPlugin
@@ -69,7 +81,7 @@ public class SubmitterWizard extends Wizard
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public boolean canFinish()
 	{
 		// We only want the "Finish" button to be enabled if the user is
@@ -82,14 +94,19 @@ public class SubmitterWizard extends Wizard
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	/**
+	 * Sets the project used by the wizard.
+	 * 
+	 * @param project the project
+	 */
 	public void setProject(IProject project)
 	{
 		this.project = project;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public boolean performFinish()
 	{
 		// Now that the submission is complete, if the submission generated a
@@ -118,8 +135,7 @@ public class SubmitterWizard extends Wizard
 	}
 
 
-	// === Instance Variables =================================================
-
+	//~ Static/instance variables .............................................
 	/**
 	 * The main page of the wizard that contains the assignment list and other
 	 * entry field.

@@ -1,25 +1,28 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui.wizards;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.WizardPage;
@@ -36,24 +39,25 @@ import org.eclipse.swt.widgets.Text;
 import org.webcat.eclipse.submitter.ui.i18n.Messages;
 import org.webcat.submitter.Submitter;
 
+//--------------------------------------------------------------------------
 /**
  * The summary page shows the status of the submission, as well as any errors
  * that may have occurred.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmitterSummaryPage extends WizardPage
 {
-	// === Methods ============================================================
+	//~ Constructors ..........................................................
 	
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Creates a new instance of the wizard summary page.
 	 * 
-	 * @param engine
-	 *            The ISubmissionEngine to which to submit.
-	 * @param project
-	 *            The project being submitted.
+	 * @param engine the {@link Submitter} to use to submit
+	 * @param project the project being submitted
 	 */
 	protected SubmitterSummaryPage(Submitter engine, IProject project)
 	{
@@ -64,7 +68,9 @@ public class SubmitterSummaryPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	//~ Methods ...............................................................
+
+	// ----------------------------------------------------------
 	public void createControl(Composite parent)
 	{
 		Composite composite = new Composite(parent, SWT.NONE);
@@ -110,7 +116,7 @@ public class SubmitterSummaryPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public void dispose()
 	{
 		if(boldFont != null)
@@ -118,14 +124,14 @@ public class SubmitterSummaryPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public boolean canFlipToNextPage()
 	{
 		return false;
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Sets the result code/error status that will be displayed in the summary.
 	 * 
@@ -141,7 +147,7 @@ public class SubmitterSummaryPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Sets the result code/error status that will be displayed in the summary.
 	 * 
@@ -156,38 +162,40 @@ public class SubmitterSummaryPage extends WizardPage
 	public void setResultCode(int result, String description,
 			Throwable throwable)
 	{
+		String desc = description;
+
 		if (throwable != null)
 		{
 			StringWriter writer = new StringWriter();
 			throwable.printStackTrace(new PrintWriter(writer));
-			description = description + writer.toString();
+			desc = description + writer.toString();
 		}
 
 		switch(result)
 		{
-		case RESULT_OK:
-			imageLabel.setImage(infoImage);
-			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_SUCCESS);
-			descriptionField.setText(description);
-			break;
-
-		case RESULT_INCOMPLETE:
-			imageLabel.setImage(warningImage);
-			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_INCOMPLETE);
-			descriptionField.setText(description);
-			break;
-
-		case RESULT_CANCELED:
-			imageLabel.setImage(warningImage);
-			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_CANCELED);
-			descriptionField.setText(description);
-			break;
-
-		case RESULT_ERROR:
-			imageLabel.setImage(errorImage);
-			summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_FAILED);
-			descriptionField.setText(description);
-			break;
+			case RESULT_OK:
+				imageLabel.setImage(infoImage);
+				summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_SUCCESS);
+				descriptionField.setText(desc);
+				break;
+	
+			case RESULT_INCOMPLETE:
+				imageLabel.setImage(warningImage);
+				summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_INCOMPLETE);
+				descriptionField.setText(desc);
+				break;
+	
+			case RESULT_CANCELED:
+				imageLabel.setImage(warningImage);
+				summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_CANCELED);
+				descriptionField.setText(desc);
+				break;
+	
+			case RESULT_ERROR:
+				imageLabel.setImage(errorImage);
+				summaryLabel.setText(Messages.SUMMARYPAGE_STATUS_FAILED);
+				descriptionField.setText(desc);
+				break;
 		}
 	}
 
@@ -215,8 +223,7 @@ public class SubmitterSummaryPage extends WizardPage
 	public static final int RESULT_ERROR = 3;
 
 	
-	// === Instance Variables =================================================
-
+	//~ Static/instance variables .............................................
 	/**
 	 * The label control used to display the error/info status of the
 	 * submission.

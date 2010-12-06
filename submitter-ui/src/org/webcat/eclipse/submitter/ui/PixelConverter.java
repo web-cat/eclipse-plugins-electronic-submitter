@@ -1,13 +1,24 @@
-/*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui;
 
 import org.eclipse.swt.graphics.FontMetrics;
@@ -16,73 +27,98 @@ import org.eclipse.swt.widgets.Control;
 
 import org.eclipse.jface.dialogs.Dialog;
 
+//--------------------------------------------------------------------------
+/**
+ * A helper class to convert dialog units to pixels; used to create
+ * appropriately sized buttons in dialogs and wizards. This code is adapted
+ * from code in the SWT source.
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
+ */
 public class PixelConverter
 {
-	// === Methods ============================================================
+	//~ Constructors ..........................................................
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * Creates a new instance of the PixelConverter class.
+	 * Initializes a new instance of the PixelConverter class for the
+	 * specified control.
 	 * 
-	 * @param control
-	 *            the control for which the PixelConverter is being created.
+	 * @param control the control for which the PixelConverter is being
+	 *     created
 	 */
 	public PixelConverter(Control control)
 	{
 		GC gc = new GC(control);
 		gc.setFont(control.getFont());
-		fFontMetrics = gc.getFontMetrics();
+		fontMetrics = gc.getFontMetrics();
 		gc.dispose();
 	}
 
 
-	// ------------------------------------------------------------------------
+	//~ Methods ...............................................................
+
+	// ----------------------------------------------------------
 	/**
-	 * see
-	 * org.eclipse.jface.dialogs.DialogPage#convertHeightInCharsToPixels(int)
+	 * Gets the number of pixels corresponding to the height of the given
+	 * number of characters.
+	 * 
+	 * @param chars the number of characters
+	 * @return the number of pixels
 	 */
 	public int convertHeightInCharsToPixels(int chars)
 	{
-		return Dialog.convertHeightInCharsToPixels(fFontMetrics, chars);
+		return Dialog.convertHeightInCharsToPixels(fontMetrics, chars);
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * see
-	 * org.eclipse.jface.dialogs.DialogPage#convertHorizontalDLUsToPixels(int)
+	 * Gets the number of pixels corresponding to the given number of
+	 * horizontal dialog units.
+	 * 
+	 * @param dlus the number of horizontal dialog units
+	 * @return the number of pixels
 	 */
 	public int convertHorizontalDLUsToPixels(int dlus)
 	{
-		return Dialog.convertHorizontalDLUsToPixels(fFontMetrics, dlus);
+		return Dialog.convertHorizontalDLUsToPixels(fontMetrics, dlus);
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * see org.eclipse.jface.dialogs.DialogPage#convertVerticalDLUsToPixels(int)
+	 * Gets the number of pixels corresponding to the given number of vertical
+	 * dialog units.
+	 * 
+	 * @param dlus the number of vertical dialog units
+	 * @return the number of pixels
 	 */
 	public int convertVerticalDLUsToPixels(int dlus)
 	{
-		return Dialog.convertVerticalDLUsToPixels(fFontMetrics, dlus);
+		return Dialog.convertVerticalDLUsToPixels(fontMetrics, dlus);
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
-	 * see org.eclipse.jface.dialogs.DialogPage#convertWidthInCharsToPixels(int)
+	 * Gets the number of pixels corresponding to the width of the given
+	 * number of characters.
+	 * 
+	 * @param chars the number of characters
+	 * @return the number of pixels
 	 */
 	public int convertWidthInCharsToPixels(int chars)
 	{
-		return Dialog.convertWidthInCharsToPixels(fFontMetrics, chars);
+		return Dialog.convertWidthInCharsToPixels(fontMetrics, chars);
 	}
 
 
-	// === Instance variables =================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * A FontMetrics instance derived from the font used by the control that
-	 * instantiated this PixelConverter.
-	 */
-	private FontMetrics fFontMetrics;
+	/* A FontMetrics instance derived from the font used by the control that
+	   instantiated this PixelConverter. */
+	private FontMetrics fontMetrics;
 }

@@ -1,20 +1,24 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
+
 package org.webcat.eclipse.submitter.ui.wizards;
 
 import java.net.MalformedURLException;
@@ -24,7 +28,9 @@ import java.util.Map;
 
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -53,6 +59,7 @@ import org.webcat.eclipse.submitter.core.SubmitterCore;
 import org.webcat.eclipse.submitter.ui.SWTUtil;
 import org.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 import org.webcat.eclipse.submitter.ui.i18n.Messages;
+import org.webcat.submitter.ISubmittableItem;
 import org.webcat.submitter.RequiredItemsMissingException;
 import org.webcat.submitter.SubmissionManifest;
 import org.webcat.submitter.SubmissionTargetException;
@@ -60,24 +67,25 @@ import org.webcat.submitter.Submitter;
 import org.webcat.submitter.targets.AssignmentTarget;
 import org.webcat.submitter.targets.SubmissionTarget;
 
+//--------------------------------------------------------------------------
 /**
- * The main page of the submission wizard contains the assignment tree and other
- * user-input fields.
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ * The main page of the submission wizard contains the assignment tree and
+ * other user-input fields.
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class SubmitterStartPage extends WizardPage
 {
-	// === Methods ============================================================
+	//~ Constructors ..........................................................
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Creates a new instance of the main wizard page.
 	 * 
-	 * @param submitter
-	 *            The ISubmissionEngine to which to submit.
-	 * @param project
-	 *            The project being submitted.
+	 * @param submitter the {@link Submitter} to use to submit
+	 * @param project the project being submitted
 	 */
 	protected SubmitterStartPage(Submitter submitter, IProject project)
 	{
@@ -91,7 +99,9 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	//~ Methods ...............................................................
+
+	// ----------------------------------------------------------
 	/**
 	 * Gets the assignment currently selected in the tree.
 	 * 
@@ -114,7 +124,7 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public void createControl(Composite parent)
 	{
 		IRunnableContext context = getContainer();
@@ -143,8 +153,7 @@ public class SubmitterStartPage extends WizardPage
 
 		Button projectChoose = new Button(projectComp, SWT.NONE);
 		projectChoose.setText(Messages.STARTPAGE_CHOOSE_PROJECT);
-		projectChoose.addSelectionListener(new SelectionAdapter()
-		{
+		projectChoose.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e)
 			{
 				chooseProjectToSubmit();
@@ -176,8 +185,7 @@ public class SubmitterStartPage extends WizardPage
 		gd.heightHint = 150;
 		assignmentTree.getControl().setLayoutData(gd);
 		assignmentTree
-		        .addSelectionChangedListener(new ISelectionChangedListener()
-		        {
+		        .addSelectionChangedListener(new ISelectionChangedListener() {
 			        public void selectionChanged(SelectionChangedEvent e)
 			        {
 				        assignmentTreeSelectionChanged();
@@ -189,8 +197,7 @@ public class SubmitterStartPage extends WizardPage
 		gd = new GridData();
 		gd.widthHint = 144;
 		username.setLayoutData(gd);
-		username.addModifyListener(new ModifyListener()
-		{
+		username.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e)
 			{
 				updatePageComplete();
@@ -202,8 +209,7 @@ public class SubmitterStartPage extends WizardPage
 		gd = new GridData();
 		gd.widthHint = 144;
 		password.setLayoutData(gd);
-		password.addModifyListener(new ModifyListener()
-		{
+		password.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e)
 			{
 				updatePageComplete();
@@ -247,7 +253,7 @@ public class SubmitterStartPage extends WizardPage
 
 		if (defUsername == null)
 		{
-			defUsername = "";
+			defUsername = ""; //$NON-NLS-1$
 		}
 
 		username.setText(defUsername);
@@ -257,7 +263,7 @@ public class SubmitterStartPage extends WizardPage
 
 		if (lastPassword == null)
 		{
-			lastPassword = "";
+			lastPassword = ""; //$NON-NLS-1$
 		}
 
 		password.setText(lastPassword);
@@ -267,7 +273,7 @@ public class SubmitterStartPage extends WizardPage
 		
 		if (lastPartners == null)
 		{
-			lastPartners = "";
+			lastPartners = ""; //$NON-NLS-1$
 		}
 
 		partners.setText(lastPartners);
@@ -280,7 +286,7 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	private void chooseProjectToSubmit()
 	{
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot()
@@ -317,7 +323,7 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	private void expandAllLocalGroups(SubmissionTarget obj,
 			                          IRunnableContext context)
 	{
@@ -341,11 +347,12 @@ public class SubmitterStartPage extends WizardPage
 		}
 		catch(SubmissionTargetException e)
 		{
+			// Do nothing.
 		}
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	private boolean usesPartnersParameter(SubmissionTarget target)
 	{
 		try
@@ -356,7 +363,7 @@ public class SubmitterStartPage extends WizardPage
 			
 			for (Map.Entry<String, String> paramEntry : params.entrySet())
 			{
-				if (paramEntry.getValue().contains("${partners}"))
+				if (paramEntry.getValue().contains("${partners}")) //$NON-NLS-1$
 				{
 					return true;
 				}
@@ -366,7 +373,7 @@ public class SubmitterStartPage extends WizardPage
 			
 			for (Map.Entry<String, String> paramEntry : params.entrySet())
 			{
-				if (paramEntry.getValue().contains("${partners}"))
+				if (paramEntry.getValue().contains("${partners}")) //$NON-NLS-1$
 				{
 					return true;
 				}
@@ -374,7 +381,7 @@ public class SubmitterStartPage extends WizardPage
 			
 			String transport = target.getTransport();
 			
-			if (transport.contains("${partners}"))
+			if (transport.contains("${partners}")) //$NON-NLS-1$
 			{
 				return true;
 			}
@@ -388,21 +395,21 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	private void assignmentTreeSelectionChanged()
 	{
 		updatePageComplete();
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	public boolean canFlipToNextPage()
 	{
 		return isPageComplete();
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	private void setErrorMessageIfInitialized(String msg)
 	{
 		if(initializationComplete)
@@ -410,7 +417,7 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	private void updatePageComplete()
 	{
 		if(project == null)
@@ -460,7 +467,30 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
+	private ISubmittableItem[] getProjectChildren()
+	{
+		try
+		{
+			ISubmittableItem[] children =
+				new ISubmittableItem[project.members().length];
+			
+			int i = 0;
+			for (IResource resource : project.members())
+			{
+				children[i++] = new SubmittableEclipseResource(resource);
+			}
+	
+			return children;
+		}
+		catch (CoreException e)
+		{
+			return new ISubmittableItem[0];
+		}
+	}
+
+	
+	// ----------------------------------------------------------
 	public IWizardPage getNextPage()
 	{
 		SubmitterSummaryPage nextPage = (SubmitterSummaryPage)super
@@ -481,11 +511,10 @@ public class SubmitterStartPage extends WizardPage
 
 			SubmissionManifest manifest = new SubmissionManifest();
 			manifest.setAssignment(getSelectedAssignment());
-			manifest.setSubmittableItems(
-					new SubmittableEclipseResource(project));
+			manifest.setSubmittableItems(getProjectChildren());
 			manifest.setUsername(username.getText().trim());
 			manifest.setPassword(password.getText());
-			manifest.setParameter("partners", partners.getText().trim());
+			manifest.setParameter("partners", partners.getText().trim()); //$NON-NLS-1$
 
 			try
 			{
@@ -542,7 +571,7 @@ public class SubmitterStartPage extends WizardPage
 
 		if (path != null)
 		{
-			String[] components = path.split("/\\$#\\$/");
+			String[] components = path.split("/\\$#\\$/"); //$NON-NLS-1$
 			TreeItem[] children = tree.getItems();
 
 			for (String component : components)
@@ -599,7 +628,7 @@ public class SubmitterStartPage extends WizardPage
 
 			while ((item = item.getParentItem()) != null)
 			{
-				buffer.insert(0, "/$#$/");
+				buffer.insert(0, "/$#$/"); //$NON-NLS-1$
 				buffer.insert(0, item.getText());
 			}
 
@@ -613,58 +642,42 @@ public class SubmitterStartPage extends WizardPage
 	}
 
 
-	// === Instance Variables =================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * The submission engine instance that should be used by this wizard to
-	 * submit the project.
-	 */
+	/* The submission engine instance that should be used by this wizard to
+	   submit the project. */
 	private Submitter submitter;
 
-	/**
-	 * The currently selected project that will be submitted by the wizard.
-	 */
+	/* The currently selected project that will be submitted by the wizard. */
 	private IProject project;
 
-	/**
-	 * A text field that displays the name of the currently selected project.
-	 */
+	/* A text field that displays the name of the currently selected
+	   project. */
 	private Text projectField;
 
-	/**
-	 * A tree that displays the submission targets that can be selected for
-	 * submission.
-	 */
+	/* A tree that displays the submission targets that can be selected for
+	   submission. */
 	private TreeViewer assignmentTree;
 
-	/**
-	 * A text field that contains the username of the person submitting the
-	 * project.
-	 */
+	/* A text field that contains the username of the person submitting the
+	   project. */
 	private Text username;
 
-	/**
-	 * A text field that contains the password to be used to authenticate with
-	 * the remote submission target.
-	 */
+	/* A text field that contains the password to be used to authenticate with
+	   the remote submission target. */
 	private Text password;
 
-	/**
-	 * A label that appears with the partners field.
-	 */
+	/* A label that appears with the partners field. */
 	private Label partnersLabel;
 	private Label partnersLabel2;
 
-	/**
-	 * A text field that optionally contains a comma-separated list of user
-	 * IDs that represent partners who should be attached to the assignment.
-	 */
+	/* A text field that optionally contains a comma-separated list of user
+	   IDs that represent partners who should be attached to the
+	   assignment. */
 	private Text partners;
 
-	/**
-	 * Set to false while control initialization occurs so that an error message
-	 * will not be displayed in the wizard until actual user input occurs, as
-	 * per Eclipse user interface guidelines.
-	 */
+	/* Set to false while control initialization occurs so that an error
+	   message will not be displayed in the wizard until actual user input
+	   occurs, as per Eclipse user interface guidelines. */
 	private boolean initializationComplete = false;
 }

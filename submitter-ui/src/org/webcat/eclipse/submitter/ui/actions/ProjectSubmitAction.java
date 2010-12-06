@@ -1,22 +1,25 @@
-/*
- *	This file is part of Web-CAT Eclipse Plugins.
- *
- *	Web-CAT is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	Web-CAT is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with Web-CAT; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-package org.webcat.eclipse.submitter.ui.actions;
+/*==========================================================================*\
+ |  $Id$
+ |*-------------------------------------------------------------------------*|
+ |  Copyright (C) 2006-2009 Virginia Tech
+ |
+ |  This file is part of Web-CAT Eclipse Plugins.
+ |
+ |  Web-CAT is free software; you can redistribute it and/or modify
+ |  it under the terms of the GNU General Public License as published by
+ |  the Free Software Foundation; either version 2 of the License, or
+ |  (at your option) any later version.
+ |
+ |  Web-CAT is distributed in the hope that it will be useful,
+ |  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ |  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ |  GNU General Public License for more details.
+ |
+ |  You should have received a copy of the GNU General Public License along
+ |  with Web-CAT; if not, see <http://www.gnu.org/licenses/>.
+\*==========================================================================*/
 
+package org.webcat.eclipse.submitter.ui.actions;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -33,19 +36,22 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.webcat.eclipse.submitter.ui.SubmitterUIPlugin;
 import org.webcat.eclipse.submitter.ui.dialogs.AmbiguousProjectToSubmitDialog;
 
+//--------------------------------------------------------------------------
 /**
  * The workbench action delegate that invokes the submission wizard. This action
  * is used by the Submit Project option in the Project menu, as well as the
  * Submit button in the main toolbar. (The Submit option in a project's context
  * menu is provided by the similar class in the .popup.actions package.)
- * 
- * @author Tony Allevato (Virginia Tech Computer Science)
+ *
+ * @author  Tony Allevato (Virginia Tech Computer Science)
+ * @author  latest changes by: $Author$
+ * @version $Revision$ $Date$
  */
 public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 {
-	// === Methods ============================================================
+	//~ Methods ...............................................................
 	
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the workbench action is invoked.
 	 */
@@ -71,9 +77,12 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 			// Navigator, etc.) is one project, but the active editor
 			// contains a file in another project. Ask the user to
 			// choose which of the two projects they want to submit.
-			AmbiguousProjectToSubmitDialog dialog = AmbiguousProjectToSubmitDialog
-			        .createWithProjects(window.getShell(), selectedProject,
-			                activeEditorProject);
+
+			AmbiguousProjectToSubmitDialog dialog =
+				AmbiguousProjectToSubmitDialog.createWithProjects(
+						window.getShell(),
+						selectedProject, activeEditorProject);
+
 			int result = dialog.open();
 
 			if(result == 0)
@@ -91,7 +100,7 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the selection in the workbench has changed.
 	 */
@@ -131,41 +140,36 @@ public class ProjectSubmitAction implements IWorkbenchWindowActionDelegate
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the delegate is disposed.
 	 */
 	public void dispose()
 	{
+		// Do nothing.
 	}
 
 
-	// ------------------------------------------------------------------------
+	// ----------------------------------------------------------
 	/**
 	 * Called when the delegate is initialized.
 	 */
-	public void init(IWorkbenchWindow window)
+	public void init(IWorkbenchWindow aWindow)
 	{
-		this.window = window;
+		this.window = aWindow;
 	}
 
 
-	// === Instance Variables =================================================
+	//~ Static/instance variables .............................................
 
-	/**
-	 * The workbench window to which this action belongs.
-	 */
+	/* The workbench window to which this action belongs. */
 	private IWorkbenchWindow window;
 
-	/**
-	 * The project that is currently selected in the workbench (in the
-	 * Navigator, Package Explorer, or similar view).
-	 */
+	/* The project that is currently selected in the workbench (in the
+	   Navigator, Package Explorer, or similar view). */
 	private IProject selectedProject;
 
-	/**
-	 * The project to which the file in the currently active workbench editor
-	 * belongs.
-	 */
+	/* The project to which the file in the currently active workbench editor
+	   belongs. */
 	private IProject activeEditorProject;
 }
