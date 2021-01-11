@@ -239,6 +239,8 @@ public class SubmitterStartPage extends WizardPage
 		partnersLabel.setVisible(false);
 		partnersLabel2.setVisible(false);
 		partners.setVisible(false);
+		username.setVisible(false);
+		password.setVisible(false);
 
 		setControl(composite);
 
@@ -393,7 +395,78 @@ public class SubmitterStartPage extends WizardPage
 			return false;
 		}
 	}
+	
+	private boolean needsUsername(SubmissionTarget target)
+    	{
+        	try
+        	{
+            		Map<String, String> params;
+            		params = target.getPackagerParameters();
+            		for (Map.Entry<String, String> paramEntry : params.entrySet())
+            		{
+                		if (paramEntry.getValue().contains("${username}")) //$NON-NLS-1$
+                		{
+                    			return true;
+                		}
+            		}
 
+            		params = target.getTransportParameters();
+            		for (Map.Entry<String, String> paramEntry : params.entrySet())
+            		{
+                		if (paramEntry.getValue().contains("${username}")) //$NON-NLS-1$
+                		{
+                    			return true;
+               			}
+            		}
+
+            		String transport = target.getTransport();
+
+            		if(transport.contains("${username}")) //$NON-NLS-1$
+            		{
+                		return true;
+            		}
+            		return false;
+        	}
+        	catch (SubmissionTargetException e) {
+            		return false;
+        	}
+    }
+
+    private boolean needsPassword(SubmissionTarget target)
+    {
+        try
+        {
+            Map<String, String> params;
+            params = target.getPackagerParameters();
+            for (Map.Entry<String, String> paramEntry : params.entrySet())
+            {
+                if (paramEntry.getValue().contains("${password}")) //$NON-NLS-1$
+                {
+                    return true;
+                }
+            }
+
+            params = target.getTransportParameters();
+            for (Map.Entry<String, String> paramEntry : params.entrySet())
+            {
+                if (paramEntry.getValue().contains("${password}")) //$NON-NLS-1$
+                {
+                    return true;
+                }
+            }
+
+            String transport = target.getTransport();
+
+            if(transport.contains("${password}")) //$NON-NLS-1$
+            {
+                return true;
+            }
+            return false;
+        }
+        catch (SubmissionTargetException e) {
+            return false;
+        }
+    }
 
 	// ----------------------------------------------------------
 	private void assignmentTreeSelectionChanged()
@@ -462,6 +535,8 @@ public class SubmitterStartPage extends WizardPage
 		partnersLabel.setVisible(usesPartners);
 		partnersLabel2.setVisible(usesPartners);
 		partners.setVisible(usesPartners);
+		username.setVisible(target != null && needsUsername(target));
+		password.setVisible(target != null && needsPassword(target));
 
 		setErrorMessage(null);
 	}
